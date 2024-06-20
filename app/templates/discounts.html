@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Discounts</h2>
+    <ul>
+    {% for discount in discounts %}
+        <li>{{ discount.percentage * 100 }}% off for {{ discount.min_purchases }} purchases or ${{ discount.min_spent }} spent</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

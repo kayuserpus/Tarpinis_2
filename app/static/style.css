@@ -1,0 +1,63 @@
+/* General styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.navbar-brand, .nav-link {
+    font-weight: bold;
+    color: #dc3545 !important;
+}
+
+.navbar-brand {
+    font-size: 2.5rem;  /* Make the "Parpora" text bigger */
+    margin-right: 50px; /* Add more space between "Parpora" and the search bar */
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545;
+}
+
+.list-group-item {
+    border: 1px solid #e1e1e1;
+}
+
+h2.text-center {
+    margin-bottom: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.nav-link.text-dark {
+    margin-right: 10px;
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
