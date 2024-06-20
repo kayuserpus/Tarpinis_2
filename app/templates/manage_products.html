@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Manage Products</h2>
+    <ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }} ({{ product.quantity }} in stock)
+            <a href="{{ url_for('admin.delete_product', product_id=product.id) }}">Delete</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

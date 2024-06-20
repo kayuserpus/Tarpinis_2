@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Set Discount</h2>
+    <form method="POST" action="{{ url_for('admin.set_discount') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.percentage.label }} {{ form.percentage() }}
+        </div>
+        <div>
+            {{ form.min_purchases.label }} {{ form.min_purchases() }}
+        </div>
+        <div>
+            {{ form.min_spent.label }} {{ form.min_spent() }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+{% endblock %}
