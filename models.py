@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 engine = create_engine('sqlite:///database.db')
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'Users'
     user_id = Column(Integer, primary_key=True, autoincrement=True)
