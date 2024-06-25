@@ -20,7 +20,7 @@ def login():
             return redirect(url_for('user.shop'))
         else:
             flash('Invalid username or password.')
-    return render_template('login.html', form=form)
+    return render_template('auth/login.html', form=form)  # Updated path
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -34,7 +34,7 @@ def register():
         db.session.commit()
         flash('You are now registered and can log in.')
         return redirect(url_for('auth.login'))
-    return render_template('register.html', form=form)
+    return render_template('auth/register.html', form=form)  # Updated path
 
 @auth_bp.route('/logout')
 @login_required
