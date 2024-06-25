@@ -56,6 +56,24 @@ class Transaction(db.Model):
     transaction_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     user = db.relationship("User", back_populates="transactions")
 
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), index=True, unique=True)
+    price = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, default=0)
+    description = db.Column(db.String(500))
+ 
+class Discount(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    discount_percentage = db.Column(db.Float, nullable=False)
+ 
+    product = db.relationship('Product', backref=db.backref('discounts', lazy=True)) 
+
+    def __repr__(self):
+        return f'<Product {self.name}>'
+ 
+
 User.cart_items = db.relationship("Cart", back_populates="user")
 User.orders = db.relationship("Order", back_populates="user")
 User.transactions = db.relationship("Transaction", back_populates="user")

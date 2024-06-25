@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
-from models import Item
-# from models import Discount
+from models import Item, Discount
 from forms import ItemForm, DiscountForm
 
 admin_bp = Blueprint('admin', __name__)
