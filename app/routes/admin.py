@@ -29,6 +29,34 @@ def add_product():
         return redirect(url_for('admin.admin_dashboard'))
     return render_template('add_product.html', form=form)
 
+@admin_bp.route('/admin/update_product_quantity/<int:product_id>', methods=['POST'])
+@login_required
+def update_product_quantity(product_id):
+    if not current_user.is_admin:
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('user.shop'))
+    product = Product.query.get_or_404(product_id)
+    quantity = request.form.get('quantity')
+    if quantity is not None:
+        product.quantity = int(quantity)
+        db.session.commit()
+        flash('Product quantity updated successfully.', 'success')
+    else:
+        flash('Invalid data.', 'danger')
+    return redirect(url_for('admin.admin_dashboard'))
+
+@admin_bp.route('/admin/remove_product/<int:product_id>', methods=['POST'])
+@login_required
+def remove_product(product_id):
+    if not current_user.is_admin:
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('user.shop'))
+    product = Product.query.get_or_404(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    flash('Product removed successfully.', 'success')
+    return redirect(url_for('admin.admin_dashboard'))
+
 @admin_bp.route('/admin/set_discount', methods=['GET', 'POST'])
 @login_required
 def set_discount():
@@ -47,39 +75,61 @@ def set_discount():
             flash('Product not found.')
     return render_template('set_discount.html', form=form)
 
+def update_discount(discount_id):
+    if not current_user.is_admin:
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('user.shop'))
+    discount = Discount.query.get_or_404(discount_id)
+    form = DiscountForm(obj=discount)
+    if form.validate_on_submit():
+        discount.discount_percentage = form.discount_percentage.data
+        db.session.commit()
+        flash('Discount updated successfully.', 'success')
+        return redirect(url_for('admin.admin_dashboard'))
+    return render_template('update_discount.html', form=form)
+
+@admin_bp.route('/admin/remove_discount/<int:discount_id>', methods=['POST'])
+@login_required
+def remove_discount(discount_id):
+    if not current_user.is_admin:
+        flash('Admin access required.', 'danger')
+        return redirect(url_for('user.shop'))
+    discount = Discount.query.get_or_404(discount_id)
+    db.session.delete(discount)
+    db.session.commit()
+    flash('Discount removed successfully.', 'success')
+    return redirect(url_for('admin.admin_dashboard'))
+
 @admin_bp.route('/admin/create_user', methods=['POST'])
 @login_required
 def create_user():
     if not current_user.is_admin:
-        return jsonify({"error": "Unauthorized access"}), 403
-    
-    data = request.get_json()
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('user.shop'))
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
     if not username or not email or not password:
-        return jsonify({"error": "Missing data"}), 400
-    
+        flash('Missing data.', 'danger')
+        return redirect(url_for('admin.admin_dashboard'))
     user = User(username=username, email=email)
     user.set_password(password)
-    
     try:
         db.session.add(user)
         db.session.commit()
-        return jsonify({"message": "User created successfully"}), 201
+        flash('User created successfully.', 'success')
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        flash(f'Error: {str(e)}', 'danger')
+    return redirect(url_for('admin.admin_dashboard'))
 
 @admin_bp.route('/admin/get_user/<int:user_id>', methods=['GET'])
 @login_required
 def get_user(user_id):
     if not current_user.is_admin:
-        return jsonify({"error": "Unauthorized access"}), 403
-    
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('user.shop'))
     user = User.query.get_or_404(user_id)
-    
     user_data = {
         "id": user.id,
         "username": user.username,
@@ -88,5 +138,16 @@ def get_user(user_id):
         "is_admin": user.is_admin,
         "created_at": user.created_at
     }
-    
-    return jsonify(user_data), 200
+    return render_template('user_details.html', user=user_data)
+
+@admin_bp.route('/admin/remove_user/<int:user_id>', methods=['POST'])
+@login_required
+def remove_user(user_id):
+    if not current_user.is_admin:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('user.shop'))
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User removed successfully.', 'success')
+    return redirect(url_for('admin.admin_dashboard'))
