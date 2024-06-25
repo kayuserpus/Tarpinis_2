@@ -9,26 +9,32 @@
             </form>
             <ul class="navbar-nav d-flex flex-row">
                 {% if current_user.is_authenticated %}
-                    <li class="nav-item">
+                    <li class="nav-item ms-3">
+                        <span class="nav-link text-black">Hello, {{ current_user.username }}!</span>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <span class="nav-link text-black">Balance: €{{ current_user.balance }}</span>
+                    </li>
+                    <li class="nav-item ms-3">
                         <a class="nav-link text-dark" href="{{ url_for('user.balance') }}">Balance</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item ms-3">
                         <a class="nav-link text-dark" href="{{ url_for('user.cart') }}">Cart</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a> <!-- Correct URL -->
+                    <li class="nav-item ms-3">
+                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
                     </li>
+                    {% if current_user.is_admin %}
+                        <li class="nav-item ms-3">
+                            <a class="nav-link text-dark" href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+                        </li>
+                    {% endif %}
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link text-dark me-2" href="{{ url_for('auth.login') }}">Login</a> <!-- Correct URL -->
+                    <li class="nav-item ms-3">
+                        <a class="nav-link text-dark me-2" href="{{ url_for('auth.login') }}">Login</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a> <!-- Correct URL -->
-                    </li>
-                {% endif %}
-                {% if current_user.is_authenticated and current_user.is_admin %}
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+                    <li class="nav-item ms-3">
+                        <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a>
                     </li>
                 {% endif %}
             </ul>

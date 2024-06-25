@@ -9,7 +9,7 @@ user_bp = Blueprint('user', __name__)
 @login_required
 def shop():
     items = Item.query.all()
-    return render_template('shop.html', products=items)
+    return render_template('shared/shop.html', products=items)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required

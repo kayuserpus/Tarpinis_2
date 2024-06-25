@@ -15,15 +15,17 @@ def create_app():
     # Register blueprints
     from routes.user import user_bp
     from routes.auth import auth_bp
+    from routes.admin import admin_bp 
+    
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(admin_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
         from models import User
         return User.query.get(int(user_id))
 
-    # Ensure the database tables are created
     with app.app_context():
         db.create_all()
 

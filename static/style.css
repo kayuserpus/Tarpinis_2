@@ -61,3 +61,7 @@ h2.text-center {
     justify-content: center;
     flex-grow: 1;
 }
+
+.text-black {
+    color: black !important;
+}
