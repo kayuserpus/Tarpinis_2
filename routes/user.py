@@ -78,3 +78,4 @@ def checkout():
     else:
         flash('Insufficient balance.')
     return redirect(url_for('user.cart'))
+
