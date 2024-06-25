@@ -11,7 +11,7 @@
     {% include 'header.html' %}
     <div class="container">
       <h2 class="mt-5">Register</h2>
-      <form method="POST" action="{{ url_for('user.register') }}">
+      <form method="POST" action="{{ url_for('auth.register') }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
           {{ form.username.label(class="form-label") }}
