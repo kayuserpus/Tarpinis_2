@@ -15,12 +15,20 @@ def shop():
 @login_required
 def balance():
     form = BalanceForm()
+    error = None
     if form.validate_on_submit():
-        current_user.balance += form.amount.data
-        db.session.commit()
-        flash('Your balance has been updated.')
-        return redirect(url_for('user.balance'))
-    return render_template('balance.html', form=form)
+        try:
+            amount = float(form.amount.data)
+            # Update user's balance logic here
+            current_user.balance += amount
+            db.session.commit()  # Commit the changes to the database
+            flash('Balance updated successfully!', 'success')
+            return redirect(url_for('user.balance'))
+        except ValueError:
+            error = "Invalid input. Please enter a numeric value."
+        except Exception as e:
+            error = str(e)
+    return render_template('users/balance.html', form=form, error=error)
 
 @user_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
