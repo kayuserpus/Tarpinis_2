@@ -16,14 +16,14 @@
                         <a class="nav-link text-dark" href="{{ url_for('user.cart') }}">Cart</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a> <!-- Correct URL -->
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark me-2" href="{{ url_for('auth.login') }}">Login</a>
+                        <a class="nav-link text-dark me-2" href="{{ url_for('auth.login') }}">Login</a> <!-- Correct URL -->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a>
+                        <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a> <!-- Correct URL -->
                     </li>
                 {% endif %}
                 {% if current_user.is_authenticated and current_user.is_admin %}

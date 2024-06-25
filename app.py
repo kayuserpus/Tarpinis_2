@@ -1,24 +1,42 @@
-# app.py
+import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from config import Config
 
-from flask import Flask, render_template
-from crud.user import get_all_users
-from crud.orders import get_all_orders
-from database import create_app, db
+# Initialize Flask extensions
+db = SQLAlchemy()
+migrate = Migrate()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
 
-app = create_app()
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-@app.route("/users")
-def users():
-    users = get_all_users()
-    return render_template("users/index.html", arr=users)
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
 
-@app.route("/orders")
-def orders():
-    data = get_all_orders()
-    return render_template("orders/index.html", arr=data)
+    # Register blueprints
+    from routes.user import user_bp
+    from routes.auth import auth_bp
+    app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        from models import User
+        return User.query.get(int(user_id))
+
+    # Ensure the database tables are created
+    with app.app_context():
+        db.create_all()
+
+    return app
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Create tables if they don't exist
+    app = create_app()
     app.run(debug=True)

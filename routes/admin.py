@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount
-from app.forms import ProductForm, DiscountForm
+from forms import ProductForm, DiscountForm
 
 admin_bp = Blueprint('admin', __name__)
 

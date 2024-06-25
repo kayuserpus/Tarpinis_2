@@ -1,68 +1,65 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, ForeignKey, TIMESTAMP, MetaData
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from app import db 
 
-engine = create_engine('sqlite:///database.db')
-Base = declarative_base()
-
-
-class User(Base):
+class User(UserMixin, db.Model):
     __tablename__ = 'Users'
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String, nullable=False, unique=True)
-    password = Column(String, nullable=False)
-    email = Column(String, nullable=False, unique=True)
-    balance = Column(Float, default=0.0)
-    is_admin = Column(Integer, default=0)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    balance = db.Column(db.Float, default=0.0)
+    is_admin = db.Column(db.Integer, default=0)
 
-class Item(Base):
+    def get_id(self):
+        return self.user_id
+
+class Item(db.Model):
     __tablename__ = 'Items'
-    item_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    description = Column(String)
-    price = Column(Float, nullable=False)
-    stock = Column(Integer, nullable=False)
+    item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    price = db.Column(db.Float, nullable=False)
+    stock = db.Column(db.Integer, nullable=False)
 
-class Cart(Base):
+class Cart(db.Model):
     __tablename__ = 'Cart'
-    cart_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('Users.user_id'), nullable=False)
-    item_id = Column(Integer, ForeignKey('Items.item_id'), nullable=False)
-    quantity = Column(Integer, nullable=False)
-    user = relationship("User", back_populates="cart_items")
-    item = relationship("Item", back_populates="cart_items")
+    cart_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('Items.item_id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    user = db.relationship("User", back_populates="cart_items")
+    item = db.relationship("Item", back_populates="cart_items")
 
-class Order(Base):
+class Order(db.Model):
     __tablename__ = 'Orders'
-    order_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('Users.user_id'), nullable=False)
-    total = Column(Float, nullable=False)
-    order_date = Column(TIMESTAMP, server_default='CURRENT_TIMESTAMP')
-    user = relationship("User", back_populates="orders")
+    order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    order_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    user = db.relationship("User", back_populates="orders")
 
-class OrderItem(Base):
+class OrderItem(db.Model):
     __tablename__ = 'OrderItems'
-    order_item_id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(Integer, ForeignKey('Orders.order_id'), nullable=False)
-    item_id = Column(Integer, ForeignKey('Items.item_id'), nullable=False)
-    quantity = Column(Integer, nullable=False)
-    price = Column(Float, nullable=False)
-    order = relationship("Order", back_populates="order_items")
-    item = relationship("Item", back_populates="order_items")
+    order_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('Orders.order_id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('Items.item_id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    order = db.relationship("Order", back_populates="order_items")
+    item = db.relationship("Item", back_populates="order_items")
 
-class Transaction(Base):
+class Transaction(db.Model):
     __tablename__ = 'Transactions'
-    transaction_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('Users.user_id'), nullable=False)
-    amount = Column(Float, nullable=False)
-    transaction_date = Column(TIMESTAMP, server_default='CURRENT_TIMESTAMP')
-    user = relationship("User", back_populates="transactions")
+    transaction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    transaction_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    user = db.relationship("User", back_populates="transactions")
 
-User.cart_items = relationship("Cart", back_populates="user")
-User.orders = relationship("Order", back_populates="user")
-User.transactions = relationship("Transaction", back_populates="user")
-Item.cart_items = relationship("Cart", back_populates="item")
-Item.order_items = relationship("OrderItem", back_populates="item")
-Order.order_items = relationship("OrderItem", back_populates="order")
-
-metadata = Base.metadata
+User.cart_items = db.relationship("Cart", back_populates="user")
+User.orders = db.relationship("Order", back_populates="user")
+User.transactions = db.relationship("Transaction", back_populates="user")
+Item.cart_items = db.relationship("Cart", back_populates="item")
+Item.order_items = db.relationship("OrderItem", back_populates="item")
+Order.order_items = db.relationship("OrderItem", back_populates="order")
