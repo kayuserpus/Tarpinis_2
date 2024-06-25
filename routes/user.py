@@ -40,9 +40,14 @@ def balance():
 @user_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
 def cart():
-    cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
-    total = sum(item.item.price * item.quantity for item in cart_items)
-    return render_template('cart.html', cart_items=cart_items, total=total)
+    # Sample data
+    cart_items = [
+        {'name': 'Product 1', 'price': 10.00, 'quantity': 2},
+        {'name': 'Product 2', 'price': 20.00, 'quantity': 1}
+    ]
+    total = sum(item['price'] * item['quantity'] for item in cart_items)
+
+    return render_template('users/cart.html', cart_items=cart_items, total=total)
 
 @user_bp.route('/add_to_cart', methods=['POST'])
 @login_required
@@ -78,3 +83,4 @@ def checkout():
     else:
         flash('Insufficient balance.')
     return redirect(url_for('user.cart'))
+
