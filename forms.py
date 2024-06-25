@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
-from models import User  # Import correctly
+from models import User
+from wtforms import DecimalField, SubmitField
+from wtforms.validators import DataRequired, NumberRange
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -27,8 +29,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 class BalanceForm(FlaskForm):
-    amount = FloatField('Amount', validators=[DataRequired()])
-    submit = SubmitField('Add to Balance')
+    amount = DecimalField('Amount', validators=[DataRequired(), NumberRange(min=0, message="Amount must be positive")])
+    submit = SubmitField('Submit')
 
 class CartForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])

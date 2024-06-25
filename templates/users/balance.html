@@ -13,6 +13,15 @@
                 {{ form.submit(class="btn btn-danger btn-lg w-100") }}
             </div>
         </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="alert alert-success" role="alert">
+                {% for category, message in messages %}
+                  <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
         {% if error %}
         <div class="alert alert-danger" role="alert">
             {{ error }}

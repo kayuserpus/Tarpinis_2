@@ -2,6 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import db, User, Item, Cart
 from forms import BalanceForm, CartForm
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
+from . import user
+from forms import BalanceForm
+from app import db
 
 user_bp = Blueprint('user', __name__)
 
@@ -19,11 +24,13 @@ def balance():
     if form.validate_on_submit():
         try:
             amount = float(form.amount.data)
-            # Update user's balance logic here
-            current_user.balance += amount
-            db.session.commit()  # Commit the changes to the database
-            flash('Balance updated successfully!', 'success')
-            return redirect(url_for('user.balance'))
+            if amount <= 0:
+                error = "Amount must be positive."
+            else:
+                current_user.balance += amount
+                db.session.commit()
+                flash('Balance updated successfully!', 'success')
+                return redirect(url_for('user.balance'))
         except ValueError:
             error = "Invalid input. Please enter a numeric value."
         except Exception as e:
