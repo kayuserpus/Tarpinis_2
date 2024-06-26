@@ -38,7 +38,9 @@ def balance():
 def cart():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.item.price * item.quantity for item in cart_items)
-    return render_template('users/cart.html', cart_items=cart_items, total=total)
+    form = CartForm() 
+    return render_template('users/cart.html', cart_items=cart_items, total=total, form=form)
+
 
 
 @user_bp.route('/add_to_cart', methods=['POST'])

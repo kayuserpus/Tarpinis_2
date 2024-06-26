@@ -14,7 +14,7 @@
         <tbody>
             {% for item in cart_items %}
             <tr>
-                <td>{{ item.item.name }}</td> 
+                <td>{{ item.item.name }}</td>
                 <td>€{{ item.item.price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>€{{ item.item.price * item.quantity }}</td>
@@ -23,5 +23,9 @@
         </tbody>
     </table>
     <h3 class="text-right">Total: €{{ total }}</h3>
+    <form action="{{ url_for('user.checkout') }}" method="post">
+        {{ form.hidden_tag() }}
+        <button class="btn btn-primary" type="submit">Checkout</button>
+    </form>
 </div>
 {% endblock %}
