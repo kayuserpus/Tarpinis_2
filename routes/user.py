@@ -1,21 +1,22 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from models import db, User, Item, Cart, Order
 from forms import BalanceForm, CartForm
-from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_required, current_user
 from . import user
+<<<<<<< HEAD
 from forms import BalanceForm
 
 from app import db
+=======
+>>>>>>> 5543e5dfec08d0034f6d9a68a82c9c31912668e3
 
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/shop')
-@login_required
 def shop():
     items = Item.query.all()
-    return render_template('shared/shop.html', products=items)
+    form = CartForm()  
+    return render_template('shared/shop.html', products=items, form=form)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
@@ -45,9 +46,13 @@ def cart():
     total = sum(item.item.price * item.quantity for item in cart_items)
     return render_template('users/cart.html', cart_items=cart_items, total=total)
 
+
 @user_bp.route('/add_to_cart', methods=['POST'])
-@login_required
 def add_to_cart():
+    if not current_user.is_authenticated:
+        flash('You need to be logged in to add items to the cart.', 'warning')
+        return redirect(url_for('auth.login'))
+
     form = CartForm()
     if form.validate_on_submit():
         item = Item.query.get(form.product_id.data)
@@ -91,7 +96,6 @@ def account():
 def order_history():
     data = Order.query.filter_by(user_id=current_user.user_id).all()
     return render_template('users/order_history.html', arr = data)
-
 
     
 
