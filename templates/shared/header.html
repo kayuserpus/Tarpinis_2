@@ -14,10 +14,10 @@
                         <span class="nav-link no-hover text-black">Hello, {{ current_user.username }}!</span>
                     </li>
                     <li class="nav-item ms-3">
-                        <span class="nav-link no-hover text-black">Balance: €{{ current_user.balance }}</span>
+                        <a class="nav-link text-black" href="{{ url_for('user.balance') }}">Balance: €{{ current_user.balance }}</a>
                     </li>
                     <li class="nav-item ms-3">
-                        <a class="nav-link text-black" href="{{ url_for('user.balance') }}">Balance</a>
+                        <a class="nav-link text-black" href="{{ url_for('user.orders_history') }}">Orders history</a>
                     </li>
                     <li class="nav-item ms-3">
                         <a class="nav-link text-black" href="{{ url_for('user.cart') }}">Cart</a>

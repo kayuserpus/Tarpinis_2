@@ -3,6 +3,8 @@ from flask_login import login_required, current_user
 from models import db, User, Item, Cart
 from forms import BalanceForm, CartForm
 from . import user
+from flask import Blueprint, render_template, session, redirect, url_for
+from models import Order
 
 user_bp = Blueprint('user', __name__)
 
@@ -78,3 +80,13 @@ def checkout():
     else:
         flash('Insufficient balance.')
     return redirect(url_for('user.cart'))
+
+@user_bp.route('/orders_history')
+@login_required
+def orders_history():
+    cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
+    total = sum(item.item.price * item.quantity for item in cart_items)
+
+    orders = Order.query.filter_by(user_id=current_user.user_id).all()
+
+    return render_template('users/orders_history.html', cart_items=cart_items, total=total, orders=orders)
