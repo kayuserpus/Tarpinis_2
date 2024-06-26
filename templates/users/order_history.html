@@ -10,7 +10,7 @@
     <h1>Orders List</h1>
     <ul>
         {% for order in arr %}
-            <li>{{ order.number }}</li>
+            <li>{{ order.order_data }}, {{ order.total }}</li>
         {% endfor %}
     </ul>
 </body>

@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, User, Item, Cart
+from models import db, User, Item, Cart, Order
 from forms import BalanceForm, CartForm
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from . import user
 from forms import BalanceForm
+
 from app import db
 
 user_bp = Blueprint('user', __name__)
@@ -78,3 +79,20 @@ def checkout():
     else:
         flash('Insufficient balance.')
     return redirect(url_for('user.cart'))
+
+@user_bp.route('/account', methods=['GET', 'POST'])
+@login_required
+def account():
+    return render_template('users/account.html', user = current_user)
+
+
+@user_bp.route('/order_history', methods=['GET', 'POST'])
+@login_required
+def order_history():
+    data = Order.query.filter_by(user_id=current_user.user_id).all()
+    return render_template('users/order_history.html', arr = data)
+
+
+    
+
+
