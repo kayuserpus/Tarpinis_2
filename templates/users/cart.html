@@ -9,6 +9,7 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Total</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -18,6 +19,12 @@
                 <td>€{{ item.item.price }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>€{{ item.item.price * item.quantity }}</td>
+                <td>
+                    <form action="{{ url_for('user.remove_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

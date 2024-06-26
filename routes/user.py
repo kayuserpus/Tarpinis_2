@@ -48,7 +48,6 @@ def add_to_cart():
     if not current_user.is_authenticated:
         flash('You need to be logged in to add items to the cart.', 'warning')
         return redirect(url_for('auth.login'))
-
     form = CartForm()
     if form.validate_on_submit():
         item = Item.query.get(form.product_id.data)
@@ -65,6 +64,25 @@ def add_to_cart():
         else:
             flash('Item not available in the requested quantity.')
     return redirect(url_for('user.shop'))
+
+@user_bp.route('/remove_from_cart/<item_id>', methods=['POST'])
+@login_required
+def remove_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item_id).first()
+    if cart_item:
+        cart_item.quantity -= 1
+        if cart_item.quantity <= 0:
+            db.session.delete(cart_item)
+        else:
+            db.session.add(cart_item)
+        item = Item.query.get(item_id)
+        item.stock += 1
+        db.session.commit()
+        flash('Item removed from cart.')
+    else:
+        flash('Item not found in cart.')
+    return redirect(url_for('user.cart'))
+
 
 @user_bp.route('/checkout', methods=['POST'])
 @login_required
