@@ -1,32 +1,37 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container">
-    
-    <div class="list-group">
-        <div class="list-group-item d-flex justify-content-between align-items-center font-weight-bold">
-            <div class="col-md-4">Product</div>
-            <div class="col-md-4">Description</div>
-            <div class="col-md-4">Action</div>
-        </div>
-        {% for product in products %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="col-md-4">
-                    <h4 class="mb-1">{{ product.name }}</h4>
-                    <p class="mb-1">€{{ product.price }} - {{ product.stock }} in stock</p>
-                </div>
-                <div class="col-md-4">
-                    <h6 class="mb-1">{{ product.description }}</h6>
-                </div>
-                <div class="col-md-4 text-right">
-                    <form action="{{ url_for('user.add_to_cart') }}" method="POST">
-                        {{ form.hidden_tag() }} 
-                        <input type="hidden" name="product_id" value="{{ product.item_id }}">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
-                    </form>
-                </div>
+    {% if products %}
+        <div class="list-group">
+            <div class="list-group-item d-flex justify-content-between align-items-center font-weight-bold">
+                <div class="col-md-4">Product</div>
+                <div class="col-md-4">Description</div>
+                <div class="col-md-4">Action</div>
             </div>
-        {% endfor %}
-    </div>
+            {% for product in products %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="col-md-4">
+                        <h4 class="mb-1"><a href="{{ url_for('user.product_detail', product_id=product.item_id) }}">{{ product.name }}</a></h4>
+                        <p class="mb-1">€{{ product.price }} - {{ product.stock }} in stock</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="mb-1">{{ product.description }}</h6>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <form action="{{ url_for('user.add_to_cart') }}" method="POST">
+                            {{ form.hidden_tag() }} 
+                            <input type="hidden" name="product_id" value="{{ product.item_id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No products found matching your search.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

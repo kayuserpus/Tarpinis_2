@@ -12,6 +12,23 @@ def shop():
     form = CartForm()  
     return render_template('shared/shop.html', products=items, form=form)
 
+@user_bp.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').strip().lower()
+    if query:
+        results = Item.query.filter(Item.name.ilike(f'%{query}%')).all()
+    else:
+        results = []
+    form = CartForm()
+    return render_template('shared/shop.html', products=results, form=form)
+
+@user_bp.route('/product/<product_id>')
+def product_detail(product_id):
+    product = Item.query.get_or_404(product_id)
+    form = CartForm()
+    return render_template('shared/product_detail.html', product=product, form=form)
+
+
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
 def balance():
@@ -41,8 +58,6 @@ def cart():
     form = CartForm() 
     return render_template('users/cart.html', cart_items=cart_items, total=total, form=form)
 
-
-
 @user_bp.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     if not current_user.is_authenticated:
@@ -65,24 +80,30 @@ def add_to_cart():
             flash('Item not available in the requested quantity.')
     return redirect(url_for('user.shop'))
 
-@user_bp.route('/remove_from_cart/<item_id>', methods=['POST'])
+@user_bp.route('/remove_one_from_cart/<item_id>', methods=['POST'])
 @login_required
-def remove_from_cart(item_id):
+def remove_one_from_cart(item_id):
     cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item_id).first()
     if cart_item:
-        cart_item.quantity -= 1
-        if cart_item.quantity <= 0:
-            db.session.delete(cart_item)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            db.session.commit()
+            flash('One quantity of the item removed from cart.', 'success')
         else:
-            db.session.add(cart_item)
-        item = Item.query.get(item_id)
-        item.stock += 1
+            db.session.delete(cart_item)
+            flash('Item removed from cart.', 'success')
         db.session.commit()
-        flash('Item removed from cart.')
-    else:
-        flash('Item not found in cart.')
     return redirect(url_for('user.cart'))
 
+@user_bp.route('/remove_all_from_cart/<item_id>', methods=['POST'])
+@login_required
+def remove_all_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash('All quantities of the item removed from cart.', 'success')
+    return redirect(url_for('user.cart'))
 
 @user_bp.route('/checkout', methods=['POST'])
 @login_required

@@ -20,9 +20,13 @@
                 <td>{{ item.quantity }}</td>
                 <td>€{{ item.item.price * item.quantity }}</td>
                 <td>
-                    <form action="{{ url_for('user.remove_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
+                    <form action="{{ url_for('user.remove_one_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
                         {{ form.hidden_tag() }}
-                        <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                        <button class="btn btn-danger btn-sm" type="submit">Remove One</button>
+                    </form>
+                    <form action="{{ url_for('user.remove_all_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-warning btn-sm" type="submit">Remove All</button>
                     </form>
                 </td>
             </tr>
