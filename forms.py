@@ -69,3 +69,10 @@ class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
     discount_percentage = FloatField('Discount Percentage', validators=[DataRequired()])
     submit = SubmitField('Set Discount')
+
+class PurchaseForm(FlaskForm):
+    item_id = IntegerField('Item ID', validators=[DataRequired()])
+    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    #price = FloatField('Price', validators=[DataRequired()])
+    submit = SubmitField('Purchase')
+    

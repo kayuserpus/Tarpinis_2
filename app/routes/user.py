@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import User, Item, Cart, Order
+from app.models import User, Item, Cart, Order, Transaction, OrderItem
 from forms import BalanceForm, CartForm
 from . import user
-from forms import BalanceForm
 from app import db
 
 user_bp = Blueprint('user', __name__)
@@ -63,7 +62,7 @@ def add_to_cart():
             db.session.commit()
             flash('Item added to cart.')
         else:
-            flash('Item not available in the requested quantity.')
+            flash('Item not available in the requested quantity.', 'error')
     return redirect(url_for('user.shop'))
 
 @user_bp.route('/checkout', methods=['POST'])
@@ -72,13 +71,19 @@ def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.item.price * item.quantity for item in cart_items)
     if current_user.balance >= total:
-        for item in cart_items:
-            db.session.delete(item)
+        order = Order(user_id=current_user.user_id, total=total)
+        db.session.add(order)
+        for cart_item in cart_items:
+            order_item = OrderItem(order_id=order.order_id, item_id=cart_item.item_id, quantity=cart_item.quantity, price=cart_item.item.price)
+            db.session.add(order_item)
+            db.session.delete(cart_item)
         current_user.balance -= total
+        transaction = Transaction(user_id=current_user.user_id, amount=total)
+        db.session.add(transaction)
         db.session.commit()
         flash('Purchase successful.')
     else:
-        flash('Insufficient balance.')
+        flash('Insufficient balance.', 'error')
     return redirect(url_for('user.cart'))
 
 @user_bp.route('/account', methods=['GET', 'POST'])
