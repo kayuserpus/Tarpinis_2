@@ -1,101 +1,182 @@
-    body {
-        background-color: #f8f9fa;
-        color: #212529;
-    }
+/* General styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-    .navbar-brand {
-        font-weight: bold;
-        color: #dc3545 !important; /* Set the text color to red */
-        font-size: 3.5rem; /* 30% smaller than 5rem */
-        transition: color 0.3s, transform 0.3s;
-    }
+.navbar-brand {
+    font-weight: bold;
+    color: #dc3545 !important; /* Set the text color to red */
+    font-size: 3.5rem; /* 30% smaller than 5rem */
+    transition: color 0.3s, transform 0.3s;
+}
 
-    .navbar-brand:hover {
-        color: #c82333 !important;
-        transform: scale(1.1); /* Slightly enlarge on hover */
-    }
+.navbar-brand:hover {
+    color: #c82333 !important;
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
 
-    .form-control {
-        border-radius: 0.25rem;
-    }
+.form-control {
+    border-radius: 0.25rem;
+}
 
-    .btn-outline-danger {
-        border-color: #dc3545;
-        color: #dc3545;
-        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-    }
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
 
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: #fff;
-    }
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
 
-    .navbar-nav .nav-item .nav-link {
-        margin-right: 15px;
-        transition: color 0.3s, transform 0.3s;
-    }
+.navbar-nav .nav-item .nav-link {
+    margin-right: 15px;
+    transition: color 0.3s, transform 0.3s;
+    padding: 10px 15px;
+}
 
-    .navbar-nav .nav-item .nav-link:hover {
-        color: #e0e0e0 !important;
-        transform: scale(1.1); /* Slightly enlarge on hover */
-    }
+.navbar-nav .nav-item .nav-link:hover {
+    color: #e0e0e0 !important;
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
 
-    .no-hover:hover {
-        color: #000 !important; /* Keep the color black on hover */
-        transform: none; /* No transformation on hover */
-    }
+.no-hover:hover {
+    color: #000 !important; /* Keep the color black on hover */
+    transform: none; /* No transformation on hover */
+}
 
-    .nav-link.text-black {
-        color: #000 !important;
-        transition: color 0.3s;
-    }
+.nav-link.text-black {
+    color: #000 !important;
+    transition: color 0.3s;
+}
 
-    .nav-link.text-black:hover {
-        color: #333 !important;
-        transform: scale(1.1); /* Slightly enlarge on hover */
-    }
+.nav-link.text-black:hover {
+    color: #333 !important;
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
 
-    .navbar-toggler {
-        border-color: #ffffff;
-    }
+.navbar-toggler {
+    border-color: #ffffff;
+}
 
-    .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-    }
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
 
-    h2.text-center {
-        margin-bottom: 20px;
-    }
+h2.text-center {
+    margin-bottom: 20px;
+}
 
-    .text-center {
-        text-align: center;
-    }
+.text-center {
+    text-align: center;
+}
 
-    .navbar-nav {
-        display: flex;
-        justify-content: center;
-        flex-grow: 1;
-    }
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
 
-    .navbar-light .navbar-nav .nav-link.active {
-        color: #ffffff !important;
-    }
+.navbar-light .navbar-nav .nav-link.active {
+    color: #ffffff !important;
+}
 
-    .bg-red {
-        background-color: #dc3545 !important; /* Set the navbar background to red */
-    }
+.bg-red {
+    background-color: #dc3545 !important; /* Set the navbar background to red */
+}
 
-    /* Basic media queries for responsiveness */
-    @media (max-width: 768px) {
-        .navbar-nav .nav-item .nav-link {
-            font-size: 1rem;
-            padding: 10px 5px;
-            margin-right: 5px;
-        }
+/* Header styles */
+.header-container {
+    background-color: #fff;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
 
-        .menu-item {
-            font-size: 1rem;
-            padding: 10px 5px;
-            margin-right: 5px;
-        }
-    }
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.header-logo {
+    font-size: 24px;
+    color: #dc3545;
+    font-weight: bold;
+    margin: 0;
+}
+
+.header-search {
+    display: flex;
+    flex-grow: 1;
+    margin: 0 20px;
+}
+
+.header-search input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+}
+
+.header-search button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.header-search button:hover {
+    background-color: #c82333;
+}
+
+.header-links {
+    display: flex;
+    align-items: center;
+}
+
+.header-links a {
+    color: #000;
+    text-decoration: none;
+    margin-left: 15px;
+    transition: color 0.3s;
+}
+
+.header-links a:hover {
+    color: #dc3545;
+}
+
+.header-nav {
+    background-color: #dc3545;
+}
+
+.header-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.header-nav li {
+    margin: 0 10px;
+}
+
+.header-nav a {
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.header-nav a:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
