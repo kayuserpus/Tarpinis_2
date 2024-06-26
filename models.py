@@ -1,17 +1,39 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from extensions import db
+from datetime import datetime, timedelta
 
 class User(UserMixin, db.Model):
     __tablename__ = 'Users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
     balance = db.Column(db.Float, default=0.0)
     is_admin = db.Column(db.Integer, default=0)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
     def get_id(self):
-        return self.user_id
+        return str(self.user_id)
+    
+    def lock_account(self, duration_minutes):
+        self.locked_until = datetime.now() + timedelta(minutes=duration_minutes)
+        self.failed_login_attempts = 0  
+
+    def unlock_account(self):
+        self.locked_until = None
+        self.failed_login_attempts = 0 
+
+    def is_account_locked(self):
+        return self.locked_until is not None and self.locked_until > datetime.now()
+
+    def increment_failed_login_attempts(self):
+        self.failed_login_attempts += 1
 
 class Item(db.Model):
     __tablename__ = 'Items'
@@ -67,7 +89,6 @@ class Discount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     discount_percentage = db.Column(db.Float, nullable=False)
- 
     product = db.relationship('Product', backref=db.backref('discounts', lazy=True)) 
 
     def __repr__(self):
