@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from models import db, User, Item, Cart, Order
+from models import User, Item, Cart, Order
 from forms import BalanceForm, CartForm
 from . import user
 from forms import BalanceForm

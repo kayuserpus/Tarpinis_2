@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from models import User
 from wtforms import DecimalField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
-from extensions import db
+from app import db
 import re
 
 class LoginForm(FlaskForm):
