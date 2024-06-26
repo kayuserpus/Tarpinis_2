@@ -85,3 +85,33 @@ h2.text-center {
 .bg-red {
     background-color: #dc3545 !important; /* Set the navbar background to red */
 }
+
+/* Basic media queries for responsiveness */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    .container {
+        width: 100%;
+        padding: 0 10px;
+    }
+    nav ul {
+        flex-direction: column;
+    }
+    .product-item {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 12px;
+    }
+    .header, .footer {
+        padding: 10px;
+    }
+    .product-item img {
+        width: 100%;
+        height: auto;
+    }
+}
