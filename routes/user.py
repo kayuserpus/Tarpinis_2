@@ -12,7 +12,7 @@ user_bp = Blueprint('user', __name__)
 def shop():
     items = Item.query.all()
     form = CartForm()  
-    return render_template('shared/shop.html', products=items, form=form)
+    return render_template('shared/index.html', products=items, form=form)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
