@@ -4,6 +4,8 @@ from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from models import User
 from wtforms import DecimalField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
+from extensions import db
+import re
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -28,6 +30,18 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
+    def validate_password(self, password):
+        if not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password.data):
+            raise ValidationError('Password must be at least 8 characters long, include letters and numbers.')
+
+    def save_user(self):
+        user = User(username=self.username.data, email=self.email.data)
+        user.set_password(self.password.data)
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+
 class BalanceForm(FlaskForm):
     amount = DecimalField('Amount', validators=[DataRequired(), NumberRange(min=0, message="Amount must be positive")])
     submit = SubmitField('Submit')
@@ -38,6 +52,13 @@ class CartForm(FlaskForm):
     submit = SubmitField('Add to Cart')
 
 class ItemForm(FlaskForm):
+    name = StringField('Product Name', validators=[DataRequired()])
+    price = FloatField('Price', validators=[DataRequired()])
+    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    description = TextAreaField('Description')
+    submit = SubmitField('Add Product')
+
+class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired()])
     price = FloatField('Price', validators=[DataRequired()])
     quantity = IntegerField('Quantity', validators=[DataRequired()])
