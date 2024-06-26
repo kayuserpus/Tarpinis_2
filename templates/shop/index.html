@@ -1,28 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PARPORA</title>
-</head>
-<body>
-
-<nav>
-  <ul>
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Shop</a></li>
-    <li><a href="#">Login</a></li>
-    <li><a href="#">Shop</a></li>
-    <li><a href="#">About Us</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
-</nav>
-
-<main>
-  <h1>Welcome to Your Shopping Website</h1>
-  <p>Explore our collection of products and find the perfect items for you!</p>
-  <!-- Add your products, promotions, featured items here -->
-</main>
-
-</body>
-</html>
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="text-center">Products</h2>
+        <div class="list-group">
+        {% for product in products %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ product.name }}</h5>
+                    <p class="mb-1">€{{ product.price }} - {{ product.quantity }} in stock</p>
+                </div>
+                {% if current_user.is_authenticated %}
+                <div>
+                    <form action="{{ url_for('shop.add_to_cart', product_id=product.id) }}" method="POST">
+                        {{ form.hidden_tag() }} 
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
 from config import Config
 from extensions import db, migrate, login_manager
 
@@ -16,10 +16,12 @@ def create_app():
     from routes.user import user_bp
     from routes.auth import auth_bp
     from routes.admin import admin_bp 
-    
+    from routes.shop import shop_bp
+
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp)
+    app.register_blueprint(shop_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
