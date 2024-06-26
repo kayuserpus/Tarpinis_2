@@ -108,9 +108,9 @@ def change_name():
             flash('Username successfully changed.', 'success')
     return redirect(url_for('user.account'))
 
-@user_bp.route('/changing_email', methods=['GET', 'POST'])
+@user_bp.route('/change_email', methods=['GET', 'POST'])
 @login_required
-def changing_email():
+def change_email():
     if request.method == 'POST':
         new_email = request.form['email']
         if User.query.filter_by(email=new_email).first():
@@ -119,7 +119,7 @@ def changing_email():
             current_user.email = new_email
             db.session.commit()
             flash('Email successfully changed.', 'success')
-    return render_template('users/change_email.html')
+    return redirect(url_for('user.account'))
 
 @user_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required

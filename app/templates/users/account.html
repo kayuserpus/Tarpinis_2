@@ -6,7 +6,10 @@
             <label for="username">User:</label><input id="username" name="username" type="text" value="{{ user.username }}">
             <button type="submit" class="btn btn-danger btn-lg ">Update username</button>
         </form>
-        <!-- <h5 class="text-center">email: {{ user.email }}</h5> -->
+        <form method="POST" action="{{ url_for('user.change_email') }}">
+            <label for="email">User:</label><input id="email" name="email" type="text" value="{{ user.email }}">
+            <button type="submit" class="btn btn-danger btn-lg ">Update email</button>
+        </form>
         <form method="GET" action="{{ url_for('user.change_password') }}">
 
             <button type="submit" class="btn btn-danger btn-lg w-100">Set new password</button>
