@@ -6,7 +6,7 @@ from . import user
 
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('/shop')
+@user_bp.route('/')
 def shop():
     items = Item.query.all()
     form = CartForm()  
