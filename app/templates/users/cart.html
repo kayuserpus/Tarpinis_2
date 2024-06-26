@@ -9,6 +9,7 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Total</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -17,11 +18,25 @@
                 <td>{{ item.item.name }}</td> 
                 <td>€{{ item.item.price }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>€{{ item.item.price * item.quantity }}</td>
+                <td>€{{ (item.item.price * item.quantity)  | round(2) }}</td>
+                <td>
+                    <form action="{{ url_for('user.remove_one_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-danger btn-sm" type="submit">Remove One</button>
+                    </form>
+                    <form action="{{ url_for('user.remove_all_from_cart', item_id=item.item_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-warning btn-sm" type="submit">Remove All</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <h3 class="text-right">Total: €{{ total }}</h3>
+    <h3 class="text-right">Total: €{{ total | round(2) }}</h3>
+    <form action="{{ url_for('user.checkout') }}" method="post">
+        {{ form.hidden_tag() }}
+        <button class="btn btn-primary" type="submit">Checkout</button>
+    </form>
 </div>
 {% endblock %}

@@ -47,9 +47,10 @@ def balance():
 @user_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
 def cart():
+    form = CartForm()
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.item.price * item.quantity for item in cart_items)
-    return render_template('users/cart.html', cart_items=cart_items, total=total)
+    return render_template('users/cart.html', cart_items=cart_items, total=total, form=form)
 
 
 @user_bp.route('/add_to_cart', methods=['POST'])
@@ -101,3 +102,46 @@ def account():
 def order_history():
     data = Order.query.filter_by(user_id=current_user.user_id).all()
     return render_template('users/orders_history.html', arr = data)
+
+
+@user_bp.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').strip().lower()
+    if query:
+        results = Item.query.filter(Item.name.ilike(f'%{query}%')).all()
+    else:
+        results = []
+    form = CartForm()
+    return render_template('shared/index.html', products=results, form=form)
+
+@user_bp.route('/product/<product_id>')
+def product_detail(product_id):
+    product = Item.query.get_or_404(product_id)
+    form = CartForm()
+    return render_template('shared/product_detail.html', product=product, form=form)
+
+
+@user_bp.route('/remove_one_from_cart/<item_id>', methods=['POST'])
+@login_required
+def remove_one_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item_id).first()
+    if cart_item:
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            db.session.commit()
+            flash('One quantity of the item removed from cart.', 'success')
+        else:
+            db.session.delete(cart_item)
+            flash('Item removed from cart.', 'success')
+        db.session.commit()
+    return redirect(url_for('user.cart'))
+
+@user_bp.route('/remove_all_from_cart/<item_id>', methods=['POST'])
+@login_required
+def remove_all_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash('All quantities of the item removed from cart.', 'success')
+    return redirect(url_for('user.cart'))

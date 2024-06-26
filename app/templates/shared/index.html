@@ -21,22 +21,32 @@
         </form>
 
         <div class="row">
-        {% for product in products %}
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">€{{ product.price }} - {{ product.stock }} in stock</p>
-                        <form action="{{ url_for('user.add_to_cart') }}" method="POST">
-                            {{ form.hidden_tag() }} 
-                            <input type="hidden" name="product_id" value="{{ product.item_id }}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
-                        </form>
+        {% if products %}
+            {% for product in products %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{{ url_for('user.product_detail', product_id=product.item_id) }}">{{ product.name }}</a></h5>
+                            <p class="card-text">€{{ product.price }} - {{ product.stock }} in stock</p>
+                            <!-- <h6 class="card-subtitle mb-2 text-muted">{{ product.description }}</h6> -->
+                            <form action="{{ url_for('user.add_to_cart') }}" method="POST">
+                                {{ form.hidden_tag() }}
+                                <input type="hidden" name="product_id" value="{{ product.item_id }}">
+                                <div class="form-group">
+                                    <label for="quantity_{{ product.item_id }}">Select Quantity:</label>
+                                    <input type="number" name="quantity" id="quantity_{{ product.item_id }}" value="1" min="1" max="{{ product.stock }}" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-danger btn-lg mt-2">Add to cart</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No products found matching your search.
             </div>
-        {% endfor %}
+        {% endif %}
         </div>
     </div>
 </div>
