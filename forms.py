@@ -69,3 +69,13 @@ class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
     discount_percentage = FloatField('Discount Percentage', validators=[DataRequired()])
     submit = SubmitField('Set Discount')
+
+
+class OrderHistoryForm(FlaskForm):
+    submit = SubmitField('View Order History')
+
+class PasswordChangeForm(FlaskForm):
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_new_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Change Password')

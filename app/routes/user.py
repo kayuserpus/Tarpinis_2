@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import User, Item, Cart, Order
-from forms import BalanceForm, CartForm
+from forms import BalanceForm, CartForm, PasswordChangeForm
 from . import user
 from forms import BalanceForm
 from app import db
@@ -91,4 +91,50 @@ def account():
 @login_required
 def order_history():
     data = Order.query.filter_by(user_id=current_user.user_id).all()
-    return render_template('users/orders_history.html', arr = data)
+    if not data:
+        flash("No order history available.")
+    return render_template('users/order_history.html', orders=data)
+    
+@user_bp.route('/change_name', methods=['GET', 'POST'])
+@login_required
+def change_name():
+    if request.method == 'POST':
+        new_username = request.form['username']
+        if User.query.filter_by(username=new_username).first():
+            flash('Username already taken. Please choose a different one.', 'danger')
+        else:
+            current_user.username = new_username
+            db.session.commit()
+            flash('Username successfully changed.', 'success')
+    return redirect(url_for('user.account'))
+
+@user_bp.route('/changing_email', methods=['GET', 'POST'])
+@login_required
+def changing_email():
+    if request.method == 'POST':
+        new_email = request.form['email']
+        if User.query.filter_by(email=new_email).first():
+            flash('Email already taken. Please choose a different one.', 'danger')
+        else:
+            current_user.email = new_email
+            db.session.commit()
+            flash('Email successfully changed.', 'success')
+    return render_template('users/change_email.html')
+
+@user_bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = PasswordChangeForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            if not current_user.check_password(form.old_password.data):
+                flash('Incorrect old password.', 'danger')
+            else:
+                current_user.set_password(form.new_password.data)
+                db.session.commit()
+                flash('Password successfully changed.', 'success')
+                return redirect(url_for('user.account'))
+        else:
+            flash('Please fill in all fields.\n New password and confirmation should match.', 'danger')
+    return render_template('users/change_password.html', form=form)
+
