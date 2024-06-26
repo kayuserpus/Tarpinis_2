@@ -3,20 +3,37 @@
 <div class="row">
     <div class="col-12">
         <h2 class="text-center">Products</h2>
-        <div class="list-group">
+        
+        <!-- Category Filter Form -->
+        <form action="{{ url_for('user.shop') }}" method="GET" class="mb-4">
+            <div class="form-group">
+                <label for="category">Filter by Category:</label>
+                <select name="category" id="category" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+
+        <div class="row">
         {% for product in products %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-1">{{ product.name }}</h5>
-                    <p class="mb-1">€{{ product.price }} - {{ product.stock }} in stock</p>
-                </div>
-                <div>
-                    <form action="{{ url_for('user.add_to_cart') }}" method="POST">
-                        {{ form.hidden_tag() }} 
-                        <input type="hidden" name="product_id" value="{{ product.item_id }}">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
-                    </form>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">€{{ product.price }} - {{ product.stock }} in stock</p>
+                        <form action="{{ url_for('user.add_to_cart') }}" method="POST">
+                            {{ form.hidden_tag() }} 
+                            <input type="hidden" name="product_id" value="{{ product.item_id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         {% endfor %}
