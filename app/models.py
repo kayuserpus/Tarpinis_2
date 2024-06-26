@@ -42,6 +42,7 @@ class Item(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
+    category = db.Column(db.String, nullable=False) 
 
 class Cart(db.Model):
     __tablename__ = 'Cart'

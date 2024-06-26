@@ -8,11 +8,20 @@ from app import db
 
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('/shop')
+@user_bp.route('/shop', methods=['GET'])
 def shop():
-    items = Item.query.all()
-    form = CartForm()  
-    return render_template('shared/index.html', products=items, form=form)
+    selected_category = request.args.get('category', '')
+
+    categories = db.session.query(Item.category.distinct()).all()
+    categories = [category[0] for category in categories]
+
+    if selected_category:
+        items = Item.query.filter_by(category=selected_category).all()
+    else:
+        items = Item.query.all()  # Fetch all items if no category is selected
+
+    form = CartForm()
+    return render_template('shared/index.html', products=items, form=form, categories=categories, selected_category=selected_category)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
