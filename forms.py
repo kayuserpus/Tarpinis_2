@@ -7,6 +7,15 @@ from wtforms.validators import DataRequired, NumberRange
 from app import db
 import re
 
+class UserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    balance = DecimalField('Balance', validators=[DataRequired(), NumberRange(min=0)])
+    is_admin = BooleanField('Is Admin')
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm = PasswordField('Repeat Password', validators=[EqualTo('password')])
+    submit = SubmitField('Submit')
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -41,7 +50,6 @@ class RegistrationForm(FlaskForm):
         db.session.commit()
         return user
 
-
 class BalanceForm(FlaskForm):
     amount = DecimalField('Amount', validators=[DataRequired(), NumberRange(min=0, message="Amount must be positive")])
     submit = SubmitField('Submit')
@@ -50,13 +58,6 @@ class CartForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     submit = SubmitField('Add to Cart')
-
-class ItemForm(FlaskForm):
-    name = StringField('Product Name', validators=[DataRequired()])
-    price = FloatField('Price', validators=[DataRequired()])
-    quantity = IntegerField('Quantity', validators=[DataRequired()])
-    description = TextAreaField('Description')
-    submit = SubmitField('Add Product')
 
 class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired()])
@@ -67,5 +68,5 @@ class ProductForm(FlaskForm):
 
 class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
-    discount_percentage = FloatField('Discount Percentage', validators=[DataRequired()])
+    discount_percentage = FloatField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Set Discount')
