@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order History</title>
+</head>
+<body>
+    <h1>Order History</h1>
+    <ul>
+        {% for order in orders %}
+            <li>
+                Order ID: {{ order.order_id }}<br>
+                Total: {{ order.total }}<br>
+                Date: {{ order.order_date }}<br>
+                Items:
+                <ul>
+                    {% for item in order.order_items %}
+                        <li>{{ item.item_id }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

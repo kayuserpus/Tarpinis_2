@@ -75,4 +75,5 @@ class PurchaseForm(FlaskForm):
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     #price = FloatField('Price', validators=[DataRequired()])
     submit = SubmitField('Purchase')
-    
+
+   
