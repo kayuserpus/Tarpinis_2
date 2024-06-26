@@ -3,12 +3,8 @@ from flask_login import login_required, current_user
 from models import db, User, Item, Cart, Order
 from forms import BalanceForm, CartForm
 from . import user
-<<<<<<< HEAD
 from forms import BalanceForm
-
 from app import db
-=======
->>>>>>> 5543e5dfec08d0034f6d9a68a82c9c31912668e3
 
 user_bp = Blueprint('user', __name__)
 
