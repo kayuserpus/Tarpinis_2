@@ -1,0 +1,27 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Discounts</h2>
+    <ul class="list-group">
+        {% for discount in discounts %}
+            <li class="list-group-item">
+                <ul class="list-unstyled">
+                    <li><strong>Product ID:</strong> {{ discount.product_id }}</li>
+                    <li><strong>Discount Percentage:</strong> {{ discount.discount_percentage }}%</li>
+                </ul>
+                <form method="POST" action="{{ url_for('admin.update_discount', discount_id=discount.id) }}" class="mb-3">
+                    <div class="mb-3">
+                        <label for="discount_percentage_{{ discount.id }}" class="form-label">New Discount Percentage:</label>
+                        <input type="number" name="discount_percentage" id="discount_percentage_{{ discount.id }}" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Discount</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.remove_discount', discount_id=discount.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Remove Discount</button>
+                </form>
+                <hr>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

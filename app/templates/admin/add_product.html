@@ -1,19 +1,28 @@
 {% extends "shared/layout.html" %}
 {% block content %}
+<div class="container mt-4">
     <h2>Add Product</h2>
     <form method="POST" action="{{ url_for('admin.add_product') }}">
         {{ form.hidden_tag() }}
-        <div>
-            {{ form.name.label }} {{ form.name() }}
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.price.label(class="form-label") }}
+            {{ form.price(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.quantity.label(class="form-label") }}
+            {{ form.quantity(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
         </div>
         <div>
-            {{ form.price.label }} {{ form.price() }}
-        </div>
-        <div>
-            {{ form.quantity.label }} {{ form.quantity() }}
-        </div>
-        <div>
-            {{ form.submit() }}
+            {{ form.submit(class="btn btn-primary") }}
         </div>
     </form>
+</div>
 {% endblock %}

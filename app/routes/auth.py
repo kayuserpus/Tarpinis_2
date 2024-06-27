@@ -34,7 +34,11 @@ def login():
         reset_failed_login_attempts(username)
         clear_lockout(username) 
         login_user(user)
-        return redirect(url_for('user.shop'))
+        if user.is_admin:
+            return redirect(url_for('admin.admin_dashboard'))
+        else:
+            return redirect(url_for('user.shop'))
+            
 
     return render_template('auth/login.html', form=form)
 

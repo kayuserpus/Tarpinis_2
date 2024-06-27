@@ -1,0 +1,11 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Remove Product</h2>
+    <p>Are you sure you want to remove this product?</p>
+    <form method="POST" action="{{ url_for('admin.remove_product', product_id=product_id) }}">
+        <button type="submit" class="btn btn-danger">Remove</button>
+        <a href="{{ url_for('admin.list_products') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
