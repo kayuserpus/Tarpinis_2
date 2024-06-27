@@ -61,12 +61,16 @@ class CartForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired()])
-    price = FloatField('Price', validators=[DataRequired()])
-    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    price = FloatField('Price', validators=[DataRequired(), NumberRange(min=0.01, message="Price must be a positive number greater than zero")])
+    quantity = IntegerField('Quantity', validators=[DataRequired(),NumberRange(min=0, message="Quantity must be a positive number greater than zero")])
     description = TextAreaField('Description')
     submit = SubmitField('Add Product')
 
 class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
-    discount_percentage = FloatField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
+    discount_percentage = IntegerField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Set Discount')
+
+class UpdateProductQuantityForm(FlaskForm):
+    quantity = IntegerField('Quantity', validators=[DataRequired(), NumberRange(min=0)])
+    submit = SubmitField('Update')

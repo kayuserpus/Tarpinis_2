@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount, User
-from forms import ProductForm, DiscountForm, UserForm
+from forms import ProductForm, DiscountForm, UserForm, UpdateProductQuantityForm, CartForm, BalanceForm
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -24,16 +24,24 @@ def add_product():
     form = ProductForm()
     
     if form.validate_on_submit():
-        product = Product(
+        try:
+            existing_product = Product.query.filter_by(name=form.name.data).first()
+            if existing_product:
+                flash('Product name already exists. Please choose a different name.', 'danger')
+                return render_template('admin/add_product.html', form=form)
+            product = Product(
             name=form.name.data, 
             price=form.price.data, 
             quantity=form.quantity.data, 
             description=form.description.data
-        )
-        db.session.add(product)
-        db.session.commit()
-        flash('Product added successfully.')
-        return redirect(url_for('admin.list_products'))
+              )
+            db.session.add(product)
+            db.session.commit()
+            flash('Product added successfully.')
+            return redirect(url_for('admin.list_products'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error: {str(e)}')
     
     return render_template('admin/add_product.html', form=form)
 
@@ -54,7 +62,7 @@ def update_product_quantity(product_id):
         return redirect(url_for('user.shop'))
     
     product = Product.query.get_or_404(product_id)
-    form = ProductForm(obj=product)
+    form = UpdateProductQuantityForm(obj=product)
     
     if form.validate_on_submit():
         product.quantity = form.quantity.data
