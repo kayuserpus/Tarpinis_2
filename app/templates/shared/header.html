@@ -39,7 +39,7 @@
                         </li>
                         {% if current_user.is_admin %}
                             <li class="nav-item ms-3">
-                                <a class="nav-link text-white" href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+                                <a class="nav-link text-dark" href="{{ url_for('admin.admin_dashboard') }}">Admin Panel</a>
                             </li>
                         {% endif %}
                     {% else %}
