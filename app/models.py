@@ -52,24 +52,6 @@ class Cart(db.Model):
     user = db.relationship("User", back_populates="cart_items")
     item = db.relationship("Item", back_populates="cart_items")
 
-# class Order(db.Model):
-#     __tablename__ = 'Orders'
-#     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
-#     total = db.Column(db.Float, nullable=False)
-#     order_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-#     user = db.relationship("User", back_populates="orders")
-
-# class OrderItem(db.Model):
-#     __tablename__ = 'OrderItems'
-#     order_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     order_id = db.Column(db.Integer, db.ForeignKey('Orders.order_id'), nullable=False)
-#     item_id = db.Column(db.Integer, db.ForeignKey('Items.item_id'), nullable=False)
-#     quantity = db.Column(db.Integer, nullable=False)
-#     price = db.Column(db.Float, nullable=False)
-#     order = db.relationship("Order", back_populates="order_items")
-#     item = db.relationship("Item", back_populates="order_items")
-
 class Transaction(db.Model):
     __tablename__ = 'Transactions'
     transaction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
