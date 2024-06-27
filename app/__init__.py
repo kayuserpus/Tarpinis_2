@@ -27,6 +27,7 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp)
 
+  
     with app.app_context():
         from app.models import User
         admin_username = os.environ.get('ADMIN_USERNAME')
