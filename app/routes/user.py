@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import User, Item, Cart, Order
-from forms import BalanceForm, CartForm, PasswordChangeForm
+from forms import BalanceForm, CartForm, PasswordChangeForm, ChangeEmailForm
 from . import user
-from forms import BalanceForm
 from app import db
 
 user_bp = Blueprint('user', __name__)
@@ -95,31 +94,41 @@ def order_history():
         flash("No order history available.")
     return render_template('users/order_history.html', orders=data)
     
-@user_bp.route('/change_name', methods=['GET', 'POST'])
+@user_bp.route('/change_username', methods=['GET', 'POST'])
 @login_required
-def change_name():
+def change_username():
     if request.method == 'POST':
-        new_username = request.form['username']
-        if User.query.filter_by(username=new_username).first():
+        new_username = request.form.get('username') 
+        if not new_username:
+            flash('Please provide a new username.', 'danger')
+            return redirect(url_for('user.change_username'))
+        existing_user = User.query.filter_by(username=new_username).first()
+        if existing_user:
             flash('Username already taken. Please choose a different one.', 'danger')
         else:
-            current_user.username = new_username
+            current_user.username = new_username  
             db.session.commit()
             flash('Username successfully changed.', 'success')
-    return redirect(url_for('user.account'))
+    return render_template('users/change_username.html')
 
 @user_bp.route('/change_email', methods=['GET', 'POST'])
 @login_required
 def change_email():
     if request.method == 'POST':
-        new_email = request.form['email']
+        new_email = request.form.get('email')
+
+        if not new_email:
+            flash('Please provide an email address.', 'danger')
+            return redirect(url_for('user.change_email'))
+
         if User.query.filter_by(email=new_email).first():
             flash('Email already taken. Please choose a different one.', 'danger')
         else:
             current_user.email = new_email
             db.session.commit()
             flash('Email successfully changed.', 'success')
-    return redirect(url_for('user.account'))
+        
+    return render_template('users/change_email.html')
 
 @user_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required

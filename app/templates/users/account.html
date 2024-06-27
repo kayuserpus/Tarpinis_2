@@ -2,21 +2,17 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <form method="POST" action="{{ url_for('user.change_name') }}">
-            <label for="username">Username:</label>
-            <input id="username" name="username" type="text" value="{{ user.username }}">
-            <button type="submit" class="btn btn-danger btn-lg">Update Username</button>
-        </form>
+<form method="POST" action="{{ url_for('user.change_username') }}">
+    <button type="submit" class="btn btn-danger btn-lg w-70">Username</button>
+</form>
         <form method="POST" action="{{ url_for('user.change_email') }}">
-            <label for="email">Email:</label>
-            <input id="email" name="email" type="text" value="{{ user.email }}">
-            <button type="submit" class="btn btn-danger btn-lg">Update Email</button>
+            <button type="submit" class="btn btn-danger btn-lg w-70">Update Email</button>
         </form>
         <form method="GET" action="{{ url_for('user.change_password') }}">
-            <button type="submit" class="btn btn-danger btn-lg w-100">Set New Password</button>
+            <button type="submit" class="btn btn-danger btn-lg w-70">Set New Password</button>
         </form>
         <form method="GET" action="{{ url_for('user.order_history') }}">
-            <button type="submit" class="btn btn-danger btn-lg w-100">View Order History</button>
+            <button type="submit" class="btn btn-danger btn-lg w-70">View Order History</button>
         </form>
         {% for message in get_flashed_messages() %}
             <div class="alert alert-danger" role="alert">

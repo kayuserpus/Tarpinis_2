@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, DecimalField
+from wtforms.validators import DataRequired, NumberRange, ValidationError, Email, EqualTo
 from app.models import User
-from wtforms import DecimalField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
 from app import db
 import re
 
@@ -79,3 +77,15 @@ class PasswordChangeForm(FlaskForm):
     new_password = PasswordField('New Password', validators=[DataRequired()])
     confirm_new_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password')])
     submit = SubmitField('Change Password')
+
+class ChangeEmailForm(FlaskForm):
+    old_email = StringField('Old Email', validators=[DataRequired(), Email()])
+    new_email = StringField('New Email', validators=[DataRequired(), Email()])
+    confirm_new_email = StringField('Confirm New Email', validators=[DataRequired(), Email(), EqualTo('new_email')])
+    submit = SubmitField('Change Email')
+
+class ChangeUsernameForm(FlaskForm):
+    old_username = StringField('Old Username', validators=[DataRequired()])
+    new_username = StringField('New Username', validators=[DataRequired()])
+    confirm_new_username = StringField('Confirm New Username', validators=[DataRequired()])
+    submit = SubmitField('Change Username')
