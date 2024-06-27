@@ -1,6 +1,9 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
+    <div class="mb-3">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </div>
     <h2>Show All Users</h2>
     <ul class="list-group">
         {% for user in users %}
@@ -11,8 +14,8 @@
             </div>
             <div>
                 <a href="{{ url_for('admin.update_user', user_id=user.user_id) }}" class="btn btn-sm btn-warning">Update User</a>
-                <form action="{{ url_for('admin.remove_user', user_id=user.user_id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                <form id="removeUserForm{{ user.user_id }}" action="{{ url_for('admin.remove_user', user_id=user.user_id) }}" method="POST" style="display:inline;">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('removeUserForm{{ user.user_id }}').submit();">Remove</button>
                 </form>
             </div>
         </li>

@@ -4,11 +4,10 @@
     <div class="col-12">
         <h2 class="text-center">Products</h2>
         
-        <!-- Category Filter Form -->
-        <form action="{{ url_for('user.shop') }}" method="GET" class="mb-4">
+        <div class="mb-4">
             <div class="form-group">
                 <label for="category">Filter by Category:</label>
-                <select name="category" id="category" class="form-control">
+                <select name="category" id="category" class="form-control" onchange="window.location.href='{{ url_for('user.shop') }}?category=' + this.value">
                     <option value="">All Categories</option>
                     {% for category in categories %}
                         <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
@@ -17,8 +16,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </form>
+        </div>
 
         <div class="row">
         {% for product in products %}
@@ -28,12 +26,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">€{{ product.price }} - {{ product.quantity }} in stock</p>
-                        <form action="{{ url_for('user.add_to_cart') }}" method="POST">
-                            {{ form.hidden_tag() }} 
-                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-danger btn-lg">Add to cart</button>
-                        </form>
+                        <a href="{{ url_for('user.add_to_cart', product_id=product.id, quantity=1) }}" class="btn btn-danger btn-lg">Add to cart</a>
                     </div>
                 </div>
             </div>

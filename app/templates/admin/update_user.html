@@ -1,8 +1,11 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
+    <div class="mb-3">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </div>
     <h2>Update User</h2>
-    <form method="POST" action="{{ url_for('admin.update_user', user_id=user_id) }}">
+    <form id="updateUserForm" method="POST" action="{{ url_for('admin.update_user', user_id=user_id) }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.username.label(class="form-label") }}
@@ -29,7 +32,7 @@
             {{ form.confirm(class="form-control") }}
         </div>
         <div>
-            {{ form.submit(class="btn btn-primary") }}
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('updateUserForm').submit();">Update User</button>
         </div>
     </form>
 </div>

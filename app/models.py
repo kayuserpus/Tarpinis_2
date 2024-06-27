@@ -46,6 +46,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, default=0)
     description = db.Column(db.String(500))
+    category = db.Column(db.String, nullable=False)
     image_path = db.Column(db.String(255), nullable=True)  # Add this line
 
     cart_items = db.relationship("Cart", back_populates="product", cascade="all, delete")

@@ -10,7 +10,7 @@
     <header class="bg-light py-3 border-bottom">
         <div class="container d-flex justify-content-between align-items-center">
             <div>
-                <a class="navbar-brand text-danger fw-bold display-4 me-5" href="{{ url_for('user.shop') }}">PARPORA</a>
+                <a class="navbar-brand text-danger fw-bold display-4 me-5" href="{{ url_for('index') }}">PARPORA</a>
             </div>
             <div class="d-flex align-items-center flex-grow-1">
                 <form class="d-flex me-3 flex-grow-1" role="search">
@@ -39,7 +39,7 @@
                         </li>
                         {% if current_user.is_admin %}
                             <li class="nav-item ms-3">
-                                <a class="nav-link text-white" href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+                                <a class="nav-link text-dark" href="{{ url_for('admin.admin_dashboard') }}">Admin Panel</a>
                             </li>
                         {% endif %}
                     {% else %}
