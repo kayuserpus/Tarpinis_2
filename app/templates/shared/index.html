@@ -24,6 +24,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
+<<<<<<< Updated upstream
                         {% if product.price != product.discounted_price %}
                         <p class="card-text">
                             <del>€{{ product.price | round(2) }}</del>
@@ -32,6 +33,9 @@
                         {% else %}
                         <p class="card-text">€{{ product.price | round(2) }} - {{ product.quantity }} in stock</p>
                         {% endif %}
+=======
+                        <p class="card-text">${{ product.price }} - {{ product.quantity }} in stock</p>
+>>>>>>> Stashed changes
                         <a href="{{ url_for('user.add_to_cart', product_id=product.id, quantity=1) }}" class="btn btn-danger btn-lg">Add to cart</a>
                     </div>
                 </div>

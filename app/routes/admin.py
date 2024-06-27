@@ -27,6 +27,32 @@ def add_product():
         return redirect(url_for('user.shop'))
     
     form = ProductForm()
+    # if form.validate_on_submit():
+    #     existing_product = Product.query.filter_by(name=form.name.data).first()
+    #     if existing_product:
+    #         flash('Product with this name already exists. Please choose a different name.', 'danger')
+    #     else:
+    #         try:
+    #             product = Product(
+    #                 name=form.name.data,
+    #                 price=form.price.data,
+    #                 quantity=form.quantity.data,
+    #                 description=form.description.data,
+    #                 category=form.category.data
+    #             )
+    #             db.session.add(product)
+    #             db.session.commit()
+    #             flash('Product added successfully.', 'success')
+    #             return redirect(url_for('admin.admin_dashboard'))
+    #         except Exception as e:
+    #             db.session.rollback()
+    #             flash(f'An error occurred while adding the product: {str(e)}', 'danger')
+    # else:
+    #     if request.method == 'POST':
+    #         flash('Form validation failed. Please correct the errors and try again.', 'danger')
+    
+    # return render_template('admin/add_product.html', form=form)
+
     
 <<<<<<< HEAD
     if request.method == 'POST':
@@ -52,7 +78,9 @@ def add_product():
                     flash('Product added successfully.')
                     return redirect(url_for('admin.admin_dashboard'))
                 except Exception as e:
+                    db.session.rollback()
                     flash(f'An error occurred while adding the product: {str(e)}', 'danger')
+<<<<<<< Updated upstream
 =======
     if form.validate_on_submit():
         try:
@@ -74,6 +102,11 @@ def add_product():
             db.session.rollback()
             flash(f'Error: {str(e)}')
 >>>>>>> 914c675 (pakoreguotos ivestys)
+=======
+    else:
+        if request.method == 'POST':
+            flash('Form validation failed. Please correct the errors and try again.', 'danger')
+>>>>>>> Stashed changes
     
     return render_template('admin/add_product.html', form=form)
 
@@ -165,16 +198,22 @@ def list_discounts():
         flash('Admin access required.')
         return redirect(url_for('user.shop'))
     discounts = Discount.query.all()
+<<<<<<< Updated upstream
     products = {product.id: product.name for product in Product.query.all()}
     return render_template('admin/list_discounts.html', discounts=discounts, products=products)
 
+=======
+    return render_template('admin/list_discounts.html', discounts=discounts)
+>>>>>>> Stashed changes
 @admin_bp.route('/admin/update_discount/<int:discount_id>', methods=['GET', 'POST'])
 @login_required
 def update_discount(discount_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
+
         return redirect(url_for('user.shop'))
     discount = Discount.query.get_or_404(discount_id)
+<<<<<<< Updated upstream
     discount_percentage = request.form.get('discount_percentage')
     if discount_percentage is not None:
         discount.discount_percentage = float(discount_percentage)
@@ -183,7 +222,21 @@ def update_discount(discount_id):
     else:
         flash('Invalid data.', 'danger')
     return redirect(url_for('admin.list_discounts'))
+=======
+    form = DiscountForm(obj=discount)
 
+    if form.validate_on_submit():
+        try:
+            discount.discount_percentage = form.discount_percentage.data
+            db.session.commit()
+            flash('Discount updated successfully.', 'success')
+            return redirect(url_for('admin.list_discounts'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occurred while updating the discount: {str(e)}', 'danger')
+>>>>>>> Stashed changes
+
+    return render_template('admin/update_discount.html', form=form, discount_id=discount_id)
 @admin_bp.route('/admin/remove_discount/<int:discount_id>', methods=['POST'])
 @login_required
 def remove_discount(discount_id):

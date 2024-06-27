@@ -96,7 +96,7 @@ class DiscountForm(FlaskForm):
         self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]
 =======
     product_id = IntegerField('Product ID', validators=[DataRequired()])
-    discount_percentage = IntegerField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
+    discount_percentage = IntegerField('Discount Percentage', validators=[DataRequired(), NumberRange(min=1, max=100)])
     submit = SubmitField('Set Discount')
 
 class UpdateProductQuantityForm(FlaskForm):

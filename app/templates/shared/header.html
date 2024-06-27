@@ -23,7 +23,7 @@
                             <span class="nav-link text-black">Hello, {{ current_user.username }}!</span>
                         </li>
                         <li class="nav-item ms-3">
-                            <a class="nav-link text-dark" href="{{ url_for('user.balance') }}">Balance: €{{ current_user.balance | round(2)}}</a>
+                            <a class="nav-link text-dark" href="{{ url_for('user.balance') }}">Balance: USD{{ current_user.balance | round(2)}}</a>
                         </li>
                         {% if not current_user.is_admin %}
                             <li class="nav-item ms-3">
