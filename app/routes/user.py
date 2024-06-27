@@ -10,7 +10,9 @@ user_bp = Blueprint('user', __name__)
 @user_bp.route('/shop', methods=['GET'])
 def shop():
     selected_category = request.args.get('category', '')
-    products, categories = get_products_and_categories(selected_category)
+    search_query = request.args.get('search', '')
+    
+    products, categories = get_products_and_categories(selected_category, search_query)
     form = CartForm()
     return render_template('shared/index.html', products=products, form=form, categories=categories, selected_category=selected_category)
 
