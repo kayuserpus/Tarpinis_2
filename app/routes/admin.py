@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount, User
 from forms import ProductForm, DiscountForm, UserForm
+import re
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -131,15 +132,6 @@ def set_discount():
     
     return render_template('admin/set_discount.html', form=form)
 
-# @admin_bp.route('/admin/discounts')
-# @login_required
-# def list_discounts():
-#     if not current_user.is_admin:
-#         flash('Admin access required.')
-#         return redirect(url_for('user.shop'))
-#     discounts = Discount.query.all()
-#     return render_template('admin/list_discounts.html', discounts=discounts)
-
 @admin_bp.route('/admin/discounts')
 @login_required
 def list_discounts():
@@ -184,45 +176,64 @@ def create_user():
     if not current_user.is_admin:
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('user.shop'))
-
+    
     form = UserForm()
     form.submit.label.text = 'Create User'
     
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        balance = request.form.get('balance')
-        is_admin = 'is_admin' in request.form
-        password = request.form.get('password')
-        confirm = request.form.get('confirm')
+        username = form.username.data
+        email = form.email.data
+        password = form.password.data
+        confirm_password = form.confirm.data
 
-        if not username or not email or not balance or not password or not confirm:
-            flash('All fields are required.', 'danger')
-        elif password != confirm:
-            flash('Passwords do not match.', 'danger')
-        else:
-            existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-            if existing_user:
-                if existing_user.username == username:
-                    flash('Username already taken. Please choose a different one.', 'danger')
-                if existing_user.email == email:
-                    flash('Email address already registered. Please use a different one.', 'danger')
-            else:
-                try:
-                    user = User(
-                        username=username,
-                        email=email,
-                        balance=balance,
-                        is_admin=is_admin
-                    )
-                    user.set_password(password)
-                    db.session.add(user)
-                    db.session.commit()
-                    flash('User created successfully.', 'success')
-                    return redirect(url_for('admin.list_users'))
-                except Exception as e:
-                    db.session.rollback()
-                    flash(f'Error: {str(e)}', 'danger')
+        errors = []
+
+        if not username:
+            errors.append('Username is required.')
+
+        if not email:
+            errors.append('Email is required.')
+        elif not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', email):
+            errors.append('Invalid email format. Must be in the format name@domain.com.')
+
+        if not password:
+            errors.append('Password is required.')
+        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+            errors.append('Password must be at least 8 characters long, include letters and numbers.')
+
+        if password != confirm_password:
+            errors.append('Passwords do not match.')
+
+        if User.query.filter_by(username=username).first():
+            errors.append('Username already taken. Please choose a different one.')
+
+        if User.query.filter_by(email=email).first():
+            errors.append('Email address already registered. Please use a different one.')
+
+        if errors or not form.validate():
+            for error in errors:
+                flash(error, 'danger')
+            for field, error_messages in form.errors.items():
+                for error in error_messages:
+                    flash(f"Error in {field}: {error}", 'danger')
+            return render_template('admin/create_user.html', form=form)
+
+        user = User(
+            username=username, 
+            email=email, 
+            balance=form.balance.data, 
+            is_admin=form.is_admin.data
+        )
+        user.set_password(password)
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('User created successfully.', 'success')
+            return redirect(url_for('admin.list_users'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error: {str(e)}', 'danger')
     
     return render_template('admin/create_user.html', form=form)
 
@@ -234,38 +245,60 @@ def update_user(user_id):
         return redirect(url_for('user.shop'))
     
     user = User.query.get_or_404(user_id)
-    form = UserForm(obj=user)
+    form = UserForm(obj=user, update=True)
     form.submit.label.text = 'Update User'
 
     if request.method == 'POST':
-        form.username.data = request.form.get('username')
-        form.email.data = request.form.get('email')
-        form.balance.data = request.form.get('balance')
-        form.is_admin.data = 'is_admin' in request.form
-        form.password.data = request.form.get('password')
-        form.confirm.data = request.form.get('confirm')
+        username = form.username.data
+        email = form.email.data
+        balance = form.balance.data
+        is_admin = form.is_admin.data
+        password = form.password.data
 
-        if not form.username.data or not form.email.data or not form.balance.data:
-            flash('Form validation failed. All fields are required.', 'danger')
-        else:
-            try:
-                user.username = form.username.data
-                user.email = form.email.data
-                user.balance = form.balance.data
-                user.is_admin = form.is_admin.data
-                if form.password.data:
-                    if form.password.data == form.confirm.data:
-                        user.set_password(form.password.data)
-                    else:
-                        flash('Passwords do not match.', 'danger')
-                        return render_template('admin/update_user.html', form=form, user_id=user_id)
-                db.session.commit()
-                flash('User updated successfully.', 'success')
-                return redirect(url_for('admin.list_users'))
-            except Exception as e:
-                flash(f'Error: {str(e)}', 'danger')
+        errors = []
+
+        if not username:
+            errors.append('Username is required.')
+
+        if not email:
+            errors.append('Email is required.')
+        elif not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', email):
+            errors.append('Invalid email format. Must be in the format name@domain.com.')
+
+        existing_user_username = User.query.filter(User.user_id != user.user_id, User.username == username).first()
+        existing_user_email = User.query.filter(User.user_id != user.user_id, User.email == email).first()
+
+        if existing_user_username:
+            errors.append('Username already taken. Please choose a different one.')
+        if existing_user_email:
+            errors.append('Email address already registered. Please use a different one.')
+
+        if errors or not form.validate():
+            for error in errors:
+                flash(error, 'danger')
+            for field, error_messages in form.errors.items():
+                for error in error_messages:
+                    flash(f"Error in {field}: {error}", 'danger')
+            return render_template('admin/update_user.html', form=form, user_id=user_id)
+
+        user.username = username
+        user.email = email
+        user.balance = balance
+        user.is_admin = is_admin
+        if password:
+            if not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+                flash('Password must be at least 8 characters long, include letters and numbers.', 'danger')
+                return render_template('admin/update_user.html', form=form, user_id=user_id)
+            user.set_password(password)
+        try:
+            db.session.commit()
+            flash('User updated successfully.', 'success')
+            return redirect(url_for('admin.list_users'))
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'danger')
     
     return render_template('admin/update_user.html', form=form, user_id=user_id)
+
 
 
 @admin_bp.route('/admin/users')
