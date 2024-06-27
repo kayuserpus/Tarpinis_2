@@ -131,6 +131,15 @@ def set_discount():
     
     return render_template('admin/set_discount.html', form=form)
 
+# @admin_bp.route('/admin/discounts')
+# @login_required
+# def list_discounts():
+#     if not current_user.is_admin:
+#         flash('Admin access required.')
+#         return redirect(url_for('user.shop'))
+#     discounts = Discount.query.all()
+#     return render_template('admin/list_discounts.html', discounts=discounts)
+
 @admin_bp.route('/admin/discounts')
 @login_required
 def list_discounts():
@@ -138,7 +147,8 @@ def list_discounts():
         flash('Admin access required.')
         return redirect(url_for('user.shop'))
     discounts = Discount.query.all()
-    return render_template('admin/list_discounts.html', discounts=discounts)
+    products = {product.id: product.name for product in Product.query.all()}
+    return render_template('admin/list_discounts.html', discounts=discounts, products=products)
 
 @admin_bp.route('/admin/update_discount/<int:discount_id>', methods=['GET', 'POST'])
 @login_required

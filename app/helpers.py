@@ -15,4 +15,8 @@ def get_products_and_categories(selected_category='', search_query=''):
     
     products = query.all()
     
+    # Calculate the discounted price for each product
+    for product in products:
+        product.discounted_price = product.get_discounted_price()
+    
     return products, categories
