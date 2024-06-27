@@ -14,7 +14,7 @@
         {% for order in orders %}
             <li>
                 <strong>Order Date:</strong> {{ order.order_date }}<br>
-                <strong>Total:</strong> ${{ order.total }}<br>
+                <strong>Total:</strong> ${{ order.total | round(2)}}<br>
                 <strong>Items:</strong>
                 <ul>
                     {% for item in order.order_items %}
