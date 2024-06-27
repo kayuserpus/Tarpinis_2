@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models import User, Product, Cart, Order, OrderItem
 from forms import BalanceForm, CartForm
 from app import db
+from datetime import timedelta
 from app.helpers import get_products_and_categories
 
 user_bp = Blueprint('user', __name__)
@@ -79,20 +80,33 @@ def add_to_cart():
 @login_required
 def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
+    if not cart_items:
+        flash('Your cart is empty. Please add items to your cart before checkout.', 'warning')
+        return redirect(url_for('user.cart'))
     total = sum(item.product.price * item.quantity for item in cart_items)
-    if current_user.balance >= total:
-        new_order = Order(user_id=current_user.user_id, total=total)
-        db.session.add(new_order)
-        db.session.commit()  
+    if current_user.balance < total:
+        flash('Insufficient balance. Please add funds to your account.', 'danger')
+        return redirect(url_for('user.cart'))
+    try:
+        order = Order(user_id=current_user.user_id, total=total)
+        db.session.add(order)
+        db.session.commit()
         for item in cart_items:
-            order_item = OrderItem(order_id=new_order.order_id, product_id=item.product_id, quantity=item.quantity, price=item.product.price)
+            order_item = OrderItem(
+                order_id=order.order_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.product.price
+            )
             db.session.add(order_item)
-            db.session.delete(item)  
+            item.product.quantity -= item.quantity
+        Cart.query.filter_by(user_id=current_user.user_id).delete()
+        db.session.commit()
         current_user.balance -= total
         db.session.commit()
-        flash('Purchase successful.')
-    else:
-        flash('Insufficient balance.')   
+        flash('Purchase successful. Your order has been placed.', 'success')
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}', 'danger')
     return redirect(url_for('user.cart'))
 
 
@@ -105,6 +119,8 @@ def account():
 @login_required
 def order_history():
     orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    for order in orders:
+        order.order_date += timedelta(hours=3)
     return render_template('users/orders_history.html', orders=orders)
 
 
