@@ -2,8 +2,12 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount, User
+<<<<<<< HEAD
 from forms import ProductForm, DiscountForm, UserForm
 import re
+=======
+from forms import ProductForm, DiscountForm, UserForm, UpdateProductQuantityForm, CartForm, BalanceForm
+>>>>>>> 914c675 (pakoreguotos ivestys)
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -24,6 +28,7 @@ def add_product():
     
     form = ProductForm()
     
+<<<<<<< HEAD
     if request.method == 'POST':
         if not form.validate():
             for fieldName, errorMessages in form.errors.items():
@@ -48,6 +53,27 @@ def add_product():
                     return redirect(url_for('admin.admin_dashboard'))
                 except Exception as e:
                     flash(f'An error occurred while adding the product: {str(e)}', 'danger')
+=======
+    if form.validate_on_submit():
+        try:
+            existing_product = Product.query.filter_by(name=form.name.data).first()
+            if existing_product:
+                flash('Product name already exists. Please choose a different name.', 'danger')
+                return render_template('admin/add_product.html', form=form)
+            product = Product(
+            name=form.name.data, 
+            price=form.price.data, 
+            quantity=form.quantity.data, 
+            description=form.description.data
+              )
+            db.session.add(product)
+            db.session.commit()
+            flash('Product added successfully.')
+            return redirect(url_for('admin.list_products'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error: {str(e)}')
+>>>>>>> 914c675 (pakoreguotos ivestys)
     
     return render_template('admin/add_product.html', form=form)
 
@@ -68,7 +94,7 @@ def update_product_quantity(product_id):
         return redirect(url_for('user.shop'))
     
     product = Product.query.get_or_404(product_id)
-    form = ProductForm(obj=product)
+    form = UpdateProductQuantityForm(obj=product)
     
     if request.method == 'POST':
         if not form.validate():

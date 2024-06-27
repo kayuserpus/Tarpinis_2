@@ -71,8 +71,8 @@ class CartForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired()])
-    price = FloatField('Price', validators=[DataRequired()])
-    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    price = FloatField('Price', validators=[DataRequired(), NumberRange(min=0.01, message="Price must be a positive number greater than zero")])
+    quantity = IntegerField('Quantity', validators=[DataRequired(),NumberRange(min=0, message="Quantity must be a positive number greater than zero")])
     description = TextAreaField('Description')
     category = StringField('Category', validators=[DataRequired()])
     submit = SubmitField('Add Product')
@@ -86,6 +86,7 @@ class ProductForm(FlaskForm):
             raise ValidationError('Quantity must be non-negative.')
 
 class DiscountForm(FlaskForm):
+<<<<<<< HEAD
     product_id = SelectField('Product', choices=[], coerce=int, validators=[DataRequired()])
     discount_percentage = FloatField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Set Discount')
@@ -93,3 +94,12 @@ class DiscountForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
         self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]
+=======
+    product_id = IntegerField('Product ID', validators=[DataRequired()])
+    discount_percentage = IntegerField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
+    submit = SubmitField('Set Discount')
+
+class UpdateProductQuantityForm(FlaskForm):
+    quantity = IntegerField('Quantity', validators=[DataRequired(), NumberRange(min=0)])
+    submit = SubmitField('Update')
+>>>>>>> 914c675 (pakoreguotos ivestys)
