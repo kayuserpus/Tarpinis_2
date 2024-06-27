@@ -12,8 +12,8 @@ class UserForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     balance = DecimalField('Balance', validators=[DataRequired(), NumberRange(min=0)])
     is_admin = BooleanField('Is Admin')
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm = PasswordField('Repeat Password', validators=[EqualTo('password')])
+    password = PasswordField('Password', render_kw={"placeholder": "Leave empty if not changing"})
+    confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Leave empty if not changing"}, validators=[EqualTo('password', message="Passwords must match")])
     submit = SubmitField('Submit')
 
 class LoginForm(FlaskForm):
@@ -64,6 +64,7 @@ class ProductForm(FlaskForm):
     price = FloatField('Price', validators=[DataRequired()])
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     description = TextAreaField('Description')
+    category = StringField('Category', validators=[DataRequired()])
     submit = SubmitField('Add Product')
 
 class DiscountForm(FlaskForm):

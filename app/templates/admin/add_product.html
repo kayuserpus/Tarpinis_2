@@ -1,11 +1,8 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
-    <div class="mb-3">
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
-    </div>
     <h2>Add Product</h2>
-    <form id="addProductForm" method="POST" action="{{ url_for('admin.add_product') }}">
+    <form method="POST" action="{{ url_for('admin.add_product') }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.name.label(class="form-label") }}
@@ -23,9 +20,14 @@
             {{ form.description.label(class="form-label") }}
             {{ form.description(class="form-control") }}
         </div>
+        <div class="mb-3">
+            {{ form.category.label(class="form-label") }}
+            {{ form.category(class="form-control") }}
+        </div>
         <div>
-            <button type="button" class="btn btn-primary" onclick="document.getElementById('addProductForm').submit();">Add Product</button>
+            {{ form.submit(class="btn btn-primary") }}
         </div>
     </form>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
 </div>
 {% endblock %}

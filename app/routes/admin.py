@@ -23,17 +23,28 @@ def add_product():
     
     form = ProductForm()
     
-    if form.validate_on_submit():
-        product = Product(
-            name=form.name.data, 
-            price=form.price.data, 
-            quantity=form.quantity.data, 
-            description=form.description.data
-        )
-        db.session.add(product)
-        db.session.commit()
-        flash('Product added successfully.')
-        return redirect(url_for('admin.list_products'))
+    if request.method == 'POST':
+        if not form.name.data or not form.price.data or not form.quantity.data or not form.category.data:
+            flash('All fields are required.', 'danger')
+        else:
+            existing_product = Product.query.filter_by(name=form.name.data).first()
+            if existing_product:
+                flash('Product with this name already exists. Please choose a different name.', 'danger')
+            else:
+                try:
+                    product = Product(
+                        name=form.name.data,
+                        price=form.price.data,
+                        quantity=form.quantity.data,
+                        description=form.description.data,
+                        category=form.category.data
+                    )
+                    db.session.add(product)
+                    db.session.commit()
+                    flash('Product added successfully.')
+                    return redirect(url_for('admin.admin_dashboard'))
+                except Exception as e:
+                    flash(f'An error occurred while adding the product: {str(e)}', 'danger')
     
     return render_template('admin/add_product.html', form=form)
 
@@ -56,11 +67,17 @@ def update_product_quantity(product_id):
     product = Product.query.get_or_404(product_id)
     form = ProductForm(obj=product)
     
-    if form.validate_on_submit():
-        product.quantity = form.quantity.data
-        db.session.commit()
-        flash('Product quantity updated successfully.', 'success')
-        return redirect(url_for('admin.list_products'))
+    if request.method == 'POST':
+        if not form.quantity.data:
+            flash('Quantity is required.', 'danger')
+        else:
+            try:
+                product.quantity = form.quantity.data
+                db.session.commit()
+                flash('Product quantity updated successfully.', 'success')
+                return redirect(url_for('admin.list_products'))
+            except Exception as e:
+                flash(f'An error occurred while updating the product quantity: {str(e)}', 'danger')
     
     return render_template('admin/update_product_quantity.html', form=form, product_id=product_id)
 
@@ -70,10 +87,13 @@ def remove_product(product_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
-    product = Product.query.get_or_404(product_id)
-    db.session.delete(product)
-    db.session.commit()
-    flash('Product removed successfully.', 'success')
+    try:
+        product = Product.query.get_or_404(product_id)
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product removed successfully.', 'success')
+    except Exception as e:
+        flash(f'An error occurred while removing the product: {str(e)}', 'danger')
     return redirect(url_for('admin.list_products'))
 
 @admin_bp.route('/admin/set_discount', methods=['GET', 'POST'])
@@ -89,7 +109,9 @@ def set_discount():
         product_id = request.form.get('product_id')
         discount_percentage = request.form.get('discount_percentage')
         
-        if product_id and discount_percentage:
+        if not product_id or not discount_percentage:
+            flash('All fields are required.', 'danger')
+        else:
             try:
                 product_id = int(product_id)
                 discount_percentage = float(discount_percentage)
@@ -102,11 +124,11 @@ def set_discount():
                     flash('Discount set successfully.')
                     return redirect(url_for('admin.list_discounts'))
                 else:
-                    flash('Product not found.')
+                    flash('Product not found.', 'danger')
             except ValueError:
-                flash('Invalid input. Please enter valid data.')
-        else:
-            flash('All fields are required.')
+                flash('Invalid input. Please enter valid data.', 'danger')
+            except Exception as e:
+                flash(f'An error occurred while setting the discount: {str(e)}', 'danger')
     
     return render_template('admin/set_discount.html', form=form)
 
@@ -125,14 +147,22 @@ def update_discount(discount_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
+    
     discount = Discount.query.get_or_404(discount_id)
     discount_percentage = request.form.get('discount_percentage')
-    if discount_percentage is not None:
-        discount.discount_percentage = float(discount_percentage)
-        db.session.commit()
-        flash('Discount updated successfully.', 'success')
+    
+    if not discount_percentage:
+        flash('Discount percentage is required.', 'danger')
     else:
-        flash('Invalid data.', 'danger')
+        try:
+            discount.discount_percentage = float(discount_percentage)
+            db.session.commit()
+            flash('Discount updated successfully.', 'success')
+        except ValueError:
+            flash('Invalid input. Please enter a valid discount percentage.', 'danger')
+        except Exception as e:
+            flash(f'An error occurred while updating the discount: {str(e)}', 'danger')
+    
     return redirect(url_for('admin.list_discounts'))
 
 @admin_bp.route('/admin/remove_discount/<int:discount_id>', methods=['POST'])
@@ -141,10 +171,13 @@ def remove_discount(discount_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
-    discount = Discount.query.get_or_404(discount_id)
-    db.session.delete(discount)
-    db.session.commit()
-    flash('Discount removed successfully.', 'success')
+    try:
+        discount = Discount.query.get_or_404(discount_id)
+        db.session.delete(discount)
+        db.session.commit()
+        flash('Discount removed successfully.', 'success')
+    except Exception as e:
+        flash(f'An error occurred while removing the discount: {str(e)}', 'danger')
     return redirect(url_for('admin.list_discounts'))
 
 @admin_bp.route('/admin/create_user', methods=['GET', 'POST'])
@@ -156,8 +189,11 @@ def create_user():
     
     form = UserForm()
     form.submit.label.text = 'Create User'
+    
     if request.method == 'POST':
-        if form.validate_on_submit():
+        if not form.username.data or not form.email.data or not form.balance.data or not form.password.data or not form.confirm.data:
+            flash('All fields are required.', 'danger')
+        else:
             existing_user = User.query.filter((User.username == form.username.data) | (User.email == form.email.data)).first()
             if existing_user:
                 if existing_user.username == form.username.data:
@@ -165,14 +201,14 @@ def create_user():
                 if existing_user.email == form.email.data:
                     flash('Email address already registered. Please use a different one.', 'danger')
             else:
-                user = User(
-                    username=form.username.data, 
-                    email=form.email.data, 
-                    balance=form.balance.data, 
-                    is_admin=form.is_admin.data
-                )
-                user.set_password(form.password.data)
                 try:
+                    user = User(
+                        username=form.username.data, 
+                        email=form.email.data, 
+                        balance=form.balance.data, 
+                        is_admin=form.is_admin.data
+                    )
+                    user.set_password(form.password.data)
                     db.session.add(user)
                     db.session.commit()
                     flash('User created successfully.', 'success')
@@ -180,8 +216,6 @@ def create_user():
                 except Exception as e:
                     db.session.rollback()
                     flash(f'Error: {str(e)}', 'danger')
-        else:
-            flash('Form validation failed. Please correct the errors and try again.', 'danger')
     
     return render_template('admin/create_user.html', form=form)
 
@@ -207,20 +241,23 @@ def update_user(user_id):
         if not form.username.data or not form.email.data or not form.balance.data:
             flash('Form validation failed. All fields are required.', 'danger')
         else:
-            user.username = form.username.data
-            user.email = form.email.data
-            user.balance = form.balance.data
-            user.is_admin = form.is_admin.data
-            if form.password.data:
-                if form.password.data == form.confirm.data:
-                    user.set_password(form.password.data)
-                else:
-                    flash('Passwords do not match.', 'danger')
-                    return render_template('admin/update_user.html', form=form, user_id=user_id)
-            db.session.commit()
-            flash('User updated successfully.', 'success')
-            return redirect(url_for('admin.list_users'))
-
+            try:
+                user.username = form.username.data
+                user.email = form.email.data
+                user.balance = form.balance.data
+                user.is_admin = form.is_admin.data
+                if form.password.data:
+                    if form.password.data == form.confirm.data:
+                        user.set_password(form.password.data)
+                    else:
+                        flash('Passwords do not match.', 'danger')
+                        return render_template('admin/update_user.html', form=form, user_id=user_id)
+                db.session.commit()
+                flash('User updated successfully.', 'success')
+                return redirect(url_for('admin.list_users'))
+            except Exception as e:
+                flash(f'Error: {str(e)}', 'danger')
+    
     return render_template('admin/update_user.html', form=form, user_id=user_id)
 
 
@@ -239,8 +276,11 @@ def remove_user(user_id):
     if not current_user.is_admin:
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('user.shop'))
-    user = User.query.get_or_404(user_id)
-    db.session.delete(user)
-    db.session.commit()
-    flash('User removed successfully.', 'success')
+    try:
+        user = User.query.get_or_404(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        flash('User removed successfully.', 'success')
+    except Exception as e:
+        flash(f'An error occurred while removing the user: {str(e)}', 'danger')
     return redirect(url_for('admin.list_users'))
