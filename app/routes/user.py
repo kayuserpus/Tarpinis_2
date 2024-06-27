@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models import User, Product, Cart, Order, OrderItem
 from forms import BalanceForm, CartForm
 from app import db
+from datetime import timedelta
 from app.helpers import get_products_and_categories
 
 user_bp = Blueprint('user', __name__)
@@ -116,6 +117,8 @@ def account():
 @login_required
 def order_history():
     orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    for order in orders:
+        order.order_date += timedelta(hours=3)
     return render_template('users/orders_history.html', orders=orders)
 
 

@@ -13,7 +13,7 @@ body {
 .navbar-brand {
     font-weight: bold;
     color: #dc3545 !important; /* Set the text color to red */
-    font-size: 3.5rem; /* 30% smaller than 5rem */
+    font-size: 1.4rem; /* 30% smaller than 5rem */
     transition: color 0.3s, transform 0.3s;
 }
 
@@ -191,4 +191,8 @@ footer {
 .header-nav a:hover {
     background-color: #c82333;
     transform: scale(1.1);
+}
+
+h1.title {
+    font-size: 1.5em; 
 }
