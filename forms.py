@@ -67,6 +67,14 @@ class ProductForm(FlaskForm):
     category = StringField('Category', validators=[DataRequired()])
     submit = SubmitField('Add Product')
 
+    def validate_price(form, field):
+        if field.data < 0:
+            raise ValidationError('Price must be non-negative.')
+
+    def validate_quantity(form, field):
+        if field.data < 0:
+            raise ValidationError('Quantity must be non-negative.')
+
 class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
     discount_percentage = FloatField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])

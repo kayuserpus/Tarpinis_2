@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount, User
@@ -24,8 +24,10 @@ def add_product():
     form = ProductForm()
     
     if request.method == 'POST':
-        if not form.name.data or not form.price.data or not form.quantity.data or not form.category.data:
-            flash('All fields are required.', 'danger')
+        if not form.validate():
+            for fieldName, errorMessages in form.errors.items():
+                for err in errorMessages:
+                    flash(f'Error in {fieldName}: {err}', 'danger')
         else:
             existing_product = Product.query.filter_by(name=form.name.data).first()
             if existing_product:
@@ -68,8 +70,10 @@ def update_product_quantity(product_id):
     form = ProductForm(obj=product)
     
     if request.method == 'POST':
-        if not form.quantity.data:
-            flash('Quantity is required.', 'danger')
+        if not form.validate():
+            for fieldName, errorMessages in form.errors.items():
+                for err in errorMessages:
+                    flash(f'Error in {fieldName}: {err}', 'danger')
         else:
             try:
                 product.quantity = form.quantity.data
@@ -87,13 +91,10 @@ def remove_product(product_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
-    try:
-        product = Product.query.get_or_404(product_id)
-        db.session.delete(product)
-        db.session.commit()
-        flash('Product removed successfully.', 'success')
-    except Exception as e:
-        flash(f'An error occurred while removing the product: {str(e)}', 'danger')
+    product = Product.query.get_or_404(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    flash('Product removed successfully.', 'success')
     return redirect(url_for('admin.list_products'))
 
 @admin_bp.route('/admin/set_discount', methods=['GET', 'POST'])
@@ -109,9 +110,7 @@ def set_discount():
         product_id = request.form.get('product_id')
         discount_percentage = request.form.get('discount_percentage')
         
-        if not product_id or not discount_percentage:
-            flash('All fields are required.', 'danger')
-        else:
+        if product_id and discount_percentage:
             try:
                 product_id = int(product_id)
                 discount_percentage = float(discount_percentage)
@@ -124,11 +123,11 @@ def set_discount():
                     flash('Discount set successfully.')
                     return redirect(url_for('admin.list_discounts'))
                 else:
-                    flash('Product not found.', 'danger')
+                    flash('Product not found.')
             except ValueError:
-                flash('Invalid input. Please enter valid data.', 'danger')
-            except Exception as e:
-                flash(f'An error occurred while setting the discount: {str(e)}', 'danger')
+                flash('Invalid input. Please enter valid data.')
+        else:
+            flash('All fields are required.')
     
     return render_template('admin/set_discount.html', form=form)
 
@@ -147,22 +146,14 @@ def update_discount(discount_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
-    
     discount = Discount.query.get_or_404(discount_id)
     discount_percentage = request.form.get('discount_percentage')
-    
-    if not discount_percentage:
-        flash('Discount percentage is required.', 'danger')
+    if discount_percentage is not None:
+        discount.discount_percentage = float(discount_percentage)
+        db.session.commit()
+        flash('Discount updated successfully.', 'success')
     else:
-        try:
-            discount.discount_percentage = float(discount_percentage)
-            db.session.commit()
-            flash('Discount updated successfully.', 'success')
-        except ValueError:
-            flash('Invalid input. Please enter a valid discount percentage.', 'danger')
-        except Exception as e:
-            flash(f'An error occurred while updating the discount: {str(e)}', 'danger')
-    
+        flash('Invalid data.', 'danger')
     return redirect(url_for('admin.list_discounts'))
 
 @admin_bp.route('/admin/remove_discount/<int:discount_id>', methods=['POST'])
@@ -171,13 +162,10 @@ def remove_discount(discount_id):
     if not current_user.is_admin:
         flash('Admin access required.', 'danger')
         return redirect(url_for('user.shop'))
-    try:
-        discount = Discount.query.get_or_404(discount_id)
-        db.session.delete(discount)
-        db.session.commit()
-        flash('Discount removed successfully.', 'success')
-    except Exception as e:
-        flash(f'An error occurred while removing the discount: {str(e)}', 'danger')
+    discount = Discount.query.get_or_404(discount_id)
+    db.session.delete(discount)
+    db.session.commit()
+    flash('Discount removed successfully.', 'success')
     return redirect(url_for('admin.list_discounts'))
 
 @admin_bp.route('/admin/create_user', methods=['GET', 'POST'])
@@ -186,29 +174,38 @@ def create_user():
     if not current_user.is_admin:
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('user.shop'))
-    
+
     form = UserForm()
     form.submit.label.text = 'Create User'
     
     if request.method == 'POST':
-        if not form.username.data or not form.email.data or not form.balance.data or not form.password.data or not form.confirm.data:
+        username = request.form.get('username')
+        email = request.form.get('email')
+        balance = request.form.get('balance')
+        is_admin = 'is_admin' in request.form
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+
+        if not username or not email or not balance or not password or not confirm:
             flash('All fields are required.', 'danger')
+        elif password != confirm:
+            flash('Passwords do not match.', 'danger')
         else:
-            existing_user = User.query.filter((User.username == form.username.data) | (User.email == form.email.data)).first()
+            existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
             if existing_user:
-                if existing_user.username == form.username.data:
+                if existing_user.username == username:
                     flash('Username already taken. Please choose a different one.', 'danger')
-                if existing_user.email == form.email.data:
+                if existing_user.email == email:
                     flash('Email address already registered. Please use a different one.', 'danger')
             else:
                 try:
                     user = User(
-                        username=form.username.data, 
-                        email=form.email.data, 
-                        balance=form.balance.data, 
-                        is_admin=form.is_admin.data
+                        username=username,
+                        email=email,
+                        balance=balance,
+                        is_admin=is_admin
                     )
-                    user.set_password(form.password.data)
+                    user.set_password(password)
                     db.session.add(user)
                     db.session.commit()
                     flash('User created successfully.', 'success')
@@ -276,11 +273,8 @@ def remove_user(user_id):
     if not current_user.is_admin:
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('user.shop'))
-    try:
-        user = User.query.get_or_404(user_id)
-        db.session.delete(user)
-        db.session.commit()
-        flash('User removed successfully.', 'success')
-    except Exception as e:
-        flash(f'An error occurred while removing the user: {str(e)}', 'danger')
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User removed successfully.', 'success')
     return redirect(url_for('admin.list_users'))
