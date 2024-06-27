@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import User, Item, Cart, Order
+from app.models import User, Cart, Order, Product, OrderItem
 from forms import BalanceForm, CartForm, PasswordChangeForm, ChangeEmailForm
-from . import user
-from app.models import User, Product, Cart, Order, OrderItem
+from . import user 
 from forms import BalanceForm, CartForm
 from app import db
 from app.helpers import get_products_and_categories
@@ -104,13 +103,13 @@ def checkout():
 def account():
     return render_template('users/account.html', user=current_user)
 
-@user_bp.route('/orders_history', methods=['GET', 'POST'])
+@user_bp.route('/orders_history', methods=['GET'])
 @login_required
 def order_history():
     orders = Order.query.filter_by(user_id=current_user.user_id).all()
     if not orders:
         flash("No order history available.")
-    return render_template('users/order_history.html', orders=orders)
+    return render_template('users/orders_history.html', orders=orders)
 
 @user_bp.route('/change_username', methods=['GET', 'POST'])
 @login_required
@@ -165,8 +164,6 @@ def change_password():
             flash('Please fill in all fields.\n New password and confirmation should match.', 'danger')
     return render_template('users/change_password.html', form=form)
 
-    orders = Order.query.filter_by(user_id=current_user.user_id).all()
-    return render_template('users/orders_history.html', orders=orders)
 
 
 
