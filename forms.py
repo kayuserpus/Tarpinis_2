@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, SelectField, DecimalField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, NumberRange
-from app.models import User, Product  # Import Product model
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, DecimalField
+from wtforms.validators import DataRequired, NumberRange, ValidationError, Email, EqualTo
+from app.models import User
 from app import db
 import re
 
@@ -81,3 +81,25 @@ class DiscountForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
         self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]
+
+
+class OrderHistoryForm(FlaskForm):
+    submit = SubmitField('View Order History')
+
+class PasswordChangeForm(FlaskForm):
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_new_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Change Password')
+
+class ChangeEmailForm(FlaskForm):
+    old_email = StringField('Old Email', validators=[DataRequired(), Email()])
+    new_email = StringField('New Email', validators=[DataRequired(), Email()])
+    confirm_new_email = StringField('Confirm New Email', validators=[DataRequired(), Email(), EqualTo('new_email')])
+    submit = SubmitField('Change Email')
+
+class ChangeUsernameForm(FlaskForm):
+    old_username = StringField('Old Username', validators=[DataRequired()])
+    new_username = StringField('New Username', validators=[DataRequired()])
+    confirm_new_username = StringField('Confirm New Username', validators=[DataRequired()])
+    submit = SubmitField('Change Username')

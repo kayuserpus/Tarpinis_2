@@ -1,0 +1,36 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Order History</h2>
+    {% if orders %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Items</th>
+                    <th>Total Price</th>
+                    <th>Order data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>
+                        <ul>
+                            {% for item in order.items %}
+                            <li>{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ order.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No order history available.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "shared/layout.html" %}
+
+{% block content %}
+    <style>
+            .custom-yellow{
+                background: white;
+                color: black;
+            }
+            .custom-yellow:hover{
+                background: rgba(223, 189, 36, 0.87);
+                color: white;
+            }
+    </style>
+<div class="container mt-4">
+    <h2 class="text-center">Change Username</h2>
+    <br>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" action="{{ url_for('user.change_username') }}">
+                <div>
+                    <label for="username">Change Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <button type="submit" style="position:relative; bottom: 3.2em; left:25em;" class="btn btn-warning btn-block mt-3 custom-yellow">Change Username</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

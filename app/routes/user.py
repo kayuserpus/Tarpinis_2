@@ -1,5 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
+from app.models import User, Item, Cart, Order
+from forms import BalanceForm, CartForm, PasswordChangeForm, ChangeEmailForm
+from . import user
 from app.models import User, Product, Cart, Order, OrderItem
 from forms import BalanceForm, CartForm
 from app import db
@@ -101,9 +104,67 @@ def checkout():
 def account():
     return render_template('users/account.html', user=current_user)
 
-@user_bp.route('/orders_history', methods=['GET'])
+@user_bp.route('/orders_history', methods=['GET', 'POST'])
 @login_required
 def order_history():
+    orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    if not orders:
+        flash("No order history available.")
+    return render_template('users/order_history.html', orders=orders)
+
+@user_bp.route('/change_username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        new_username = request.form.get('username') 
+        if not new_username:
+            flash('Please provide a new username.', 'danger')
+            return redirect(url_for('user.change_username'))
+        existing_user = User.query.filter_by(username=new_username).first()
+        if existing_user:
+            flash('Username already taken. Please choose a different one.', 'danger')
+        else:
+            current_user.username = new_username  
+            db.session.commit()
+            flash('Username successfully changed.', 'success')
+    return render_template('users/change_username.html')
+
+@user_bp.route('/change_email', methods=['GET', 'POST'])
+@login_required
+def change_email():
+    if request.method == 'POST':
+        new_email = request.form.get('email')
+
+        if not new_email:
+            flash('Please provide an email address.', 'danger')
+            return redirect(url_for('user.change_email'))
+
+        if User.query.filter_by(email=new_email).first():
+            flash('Email already taken. Please choose a different one.', 'danger')
+        else:
+            current_user.email = new_email
+            db.session.commit()
+            flash('Email successfully changed.', 'success')
+        
+    return render_template('users/change_email.html')
+
+@user_bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = PasswordChangeForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            if not current_user.check_password(form.old_password.data):
+                flash('Incorrect old password.', 'danger')
+            else:
+                current_user.set_password(form.new_password.data)
+                db.session.commit()
+                flash('Password successfully changed.', 'success')
+                return redirect(url_for('user.account'))
+        else:
+            flash('Please fill in all fields.\n New password and confirmation should match.', 'danger')
+    return render_template('users/change_password.html', form=form)
+
     orders = Order.query.filter_by(user_id=current_user.user_id).all()
     return render_template('users/orders_history.html', orders=orders)
 
