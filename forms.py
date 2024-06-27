@@ -1,9 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
-from app.models import User
-from wtforms import DecimalField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, SelectField, DecimalField
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, NumberRange
+from app.models import User, Product  # Import Product model
 from app import db
 import re
 
@@ -68,6 +66,10 @@ class ProductForm(FlaskForm):
     submit = SubmitField('Add Product')
 
 class DiscountForm(FlaskForm):
-    product_id = IntegerField('Product ID', validators=[DataRequired()])
+    product_id = SelectField('Product', choices=[], coerce=int, validators=[DataRequired()])
     discount_percentage = FloatField('Discount Percentage', validators=[DataRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Set Discount')
+
+    def __init__(self, *args, **kwargs):
+        super(DiscountForm, self).__init__(*args, **kwargs)
+        self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]

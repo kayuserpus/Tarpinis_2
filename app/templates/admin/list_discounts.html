@@ -9,7 +9,7 @@
         {% for discount in discounts %}
             <li class="list-group-item">
                 <ul class="list-unstyled">
-                    <li><strong>Product ID:</strong> {{ discount.product_id }}</li>
+                    <li><strong>Product Name:</strong> {{ products[discount.product_id] }}</li> <!-- Use product name instead of ID -->
                     <li><strong>Discount Percentage:</strong> {{ discount.discount_percentage }}%</li>
                 </ul>
                 <form id="updateDiscountForm{{ discount.id }}" method="POST" action="{{ url_for('admin.update_discount', discount_id=discount.id) }}" class="mb-3">

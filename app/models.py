@@ -52,6 +52,12 @@ class Product(db.Model):
     order_items = db.relationship("OrderItem", back_populates="product", cascade="all, delete")
     discounts = db.relationship('Discount', back_populates='product', cascade="all, delete")
 
+    def get_discounted_price(self):
+        if self.discounts:
+            discount = self.discounts[0].discount_percentage
+            return self.price * (1 - discount / 100)
+        return self.price
+
 class Cart(db.Model):
     __tablename__ = 'Cart'
     cart_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
