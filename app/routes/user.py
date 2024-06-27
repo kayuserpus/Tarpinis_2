@@ -85,15 +85,14 @@ def checkout():
 def account():
     return render_template('users/account.html', user = current_user)
 
-
 @user_bp.route('/orders_history', methods=['GET', 'POST'])
 @login_required
 def order_history():
-    data = Order.query.filter_by(user_id=current_user.user_id).all()
-    if not data:
+    orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    if not orders:
         flash("No order history available.")
-    return render_template('users/order_history.html', orders=data)
-    
+    return render_template('users/order_history.html', orders=orders)
+
 @user_bp.route('/change_username', methods=['GET', 'POST'])
 @login_required
 def change_username():
