@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import User, Product, Cart, Order
+from app.models import User, Product, Cart, Order, OrderItem
 from forms import BalanceForm, CartForm
 from app import db
 from app.helpers import get_products_and_categories
@@ -38,9 +38,11 @@ def balance():
 @user_bp.route('/cart', methods=['GET', 'POST'])
 @login_required
 def cart():
+    form = CartForm()
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.product.price * item.quantity for item in cart_items)
-    return render_template('users/cart.html', cart_items=cart_items, total=total)
+    return render_template('users/cart.html', cart_items=cart_items, total=total, form=form)
+
 
 @user_bp.route('/add_to_cart', methods=['GET'])
 def add_to_cart():
@@ -77,22 +79,69 @@ def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.product.price * item.quantity for item in cart_items)
     if current_user.balance >= total:
+        new_order = Order(user_id=current_user.user_id, total=total)
+        db.session.add(new_order)
+        db.session.commit()  
         for item in cart_items:
-            db.session.delete(item)
+            order_item = OrderItem(order_id=new_order.order_id, product_id=item.product_id, quantity=item.quantity, price=item.product.price)
+            db.session.add(order_item)
+            db.session.delete(item)  
         current_user.balance -= total
         db.session.commit()
         flash('Purchase successful.')
     else:
-        flash('Insufficient balance.')
+        flash('Insufficient balance.')   
     return redirect(url_for('user.cart'))
+
 
 @user_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
     return render_template('users/account.html', user=current_user)
 
-@user_bp.route('/orders_history', methods=['GET', 'POST'])
+@user_bp.route('/orders_history', methods=['GET'])
 @login_required
 def order_history():
-    data = Order.query.filter_by(user_id=current_user.user_id).all()
-    return render_template('users/orders_history.html', orders=data)
+    orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    return render_template('users/orders_history.html', orders=orders)
+
+
+
+
+@user_bp.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').strip().lower()
+    if query:
+        results = Product.query.filter(Product.name.ilike(f'%{query}%')).all()
+    else:
+        results = []
+    form = CartForm()
+    return render_template('shared/index.html', products=results, form=form)
+
+
+@user_bp.route('/remove_one_from_cart/<int:item_id>', methods=['POST'])
+@login_required
+def remove_one_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, product_id=item_id).first()
+    if cart_item:
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+        else:
+            db.session.delete(cart_item)
+        db.session.commit()
+        flash('One item removed from cart.', 'success')
+    else:
+        flash('Item not found in cart.', 'danger')
+    return redirect(url_for('user.cart'))
+
+@user_bp.route('/remove_all_from_cart/<int:item_id>', methods=['POST'])
+@login_required
+def remove_all_from_cart(item_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.user_id, product_id=item_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash('All items removed from cart.', 'success')
+    else:
+        flash('Item not found in cart.', 'danger')
+    return redirect(url_for('user.cart'))

@@ -1,16 +1,30 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders</title>
+    <title>Order History</title>
 </head>
 <body>
-    <h1>Orders List</h1>
+    <h1>Order History</h1>
     <ul>
-        {% for order in arr %}
-            <li>{{ order.order_data }}, {{ order.total }}</li>
+        {% for order in orders %}
+            <li>
+                <strong>Order Date:</strong> {{ order.order_date }}<br>
+                <strong>Total:</strong> ${{ order.total }}<br>
+                <strong>Items:</strong>
+                <ul>
+                    {% for item in order.order_items %}
+                        <li>{{ item.product.name }} - {{ item.quantity }} x ${{ item.price }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
         {% endfor %}
     </ul>
 </body>
 </html>
+
+{% endblock %}
