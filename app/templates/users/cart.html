@@ -33,15 +33,19 @@
             {% endfor %}
         </tbody>
     </table>
-    {% if current_user.is_eligible_for_discount() %}
-    <h4 class="text-right">Discount: 15%</h4>
-    <h3 class="text-right">Total after Discount: €{{ (total * 0.85) | round(2) }}</h3>
+    {% if cart_items|length > 0 %}
+        {% if current_user.is_eligible_for_discount() %}
+        <h4 class="text-right">Discount: 15%</h4>
+        <h3 class="text-right">Total after Discount: €{{ (total * 0.85) | round(2) }}</h3>
+        {% else %}
+        <h3 class="text-right">Total: €{{ total | round(2) }}</h3>
+        {% endif %}
+        <form action="{{ url_for('user.checkout') }}" method="post">
+            {{ form.hidden_tag() }}
+            <button class="btn btn-primary" type="submit">Checkout</button>
+        </form>
     {% else %}
-    <h3 class="text-right">Total: €{{ total | round(2) }}</h3>
+        <h3 class="text-right">Your cart is empty.</h3>
     {% endif %}
-    <form action="{{ url_for('user.checkout') }}" method="post">
-        {{ form.hidden_tag() }}
-        <button class="btn btn-primary" type="submit">Checkout</button>
-    </form>
 </div>
 {% endblock %}
