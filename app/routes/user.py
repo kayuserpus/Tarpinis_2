@@ -80,19 +80,25 @@ def add_to_cart():
 def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
     total = sum(item.product.price * item.quantity for item in cart_items)
+
+    if current_user.is_eligible_for_discount():
+        discount = 0.15
+        total *= (1 - discount)
+
     if current_user.balance >= total:
         new_order = Order(user_id=current_user.user_id, total=total)
         db.session.add(new_order)
-        db.session.commit()  
+        db.session.commit()
         for item in cart_items:
             order_item = OrderItem(order_id=new_order.order_id, product_id=item.product_id, quantity=item.quantity, price=item.product.price)
             db.session.add(order_item)
-            db.session.delete(item)  
+            db.session.delete(item)
         current_user.balance -= total
         db.session.commit()
         flash('Purchase successful.')
     else:
-        flash('Insufficient balance.')   
+        flash('Insufficient balance.')
+    
     return redirect(url_for('user.cart'))
 
 
