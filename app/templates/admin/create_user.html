@@ -1,11 +1,8 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
-    <div class="mb-3">
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
-    </div>
     <h2>Create User</h2>
-    <form id="createUserForm" method="POST" action="{{ url_for('admin.create_user') }}">
+    <form method="POST" action="{{ url_for('admin.create_user') }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.username.label(class="form-label") }}
@@ -32,8 +29,9 @@
             {{ form.confirm(class="form-control") }}
         </div>
         <div>
-            <button type="button" class="btn btn-primary" onclick="document.getElementById('createUserForm').submit();">Create User</button>
+            {{ form.submit(class="btn btn-primary") }}
         </div>
     </form>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary mt-3">Back to Admin Panel</a>
 </div>
 {% endblock %}

@@ -1,18 +1,28 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, SelectField, DecimalField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, NumberRange
-from app.models import User, Product  # Import Product model
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, NumberRange, Optional
+from app.models import User, Product 
 from app import db
 import re
 
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    balance = DecimalField('Balance', validators=[DataRequired(), NumberRange(min=0)])
+    balance = DecimalField('Balance', validators=[Optional(), NumberRange(min=0, message="Balance must be 0 or more")])
     is_admin = BooleanField('Is Admin')
-    password = PasswordField('Password', render_kw={"placeholder": "Leave empty if not changing"})
-    confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Leave empty if not changing"}, validators=[EqualTo('password', message="Passwords must match")])
+    password = PasswordField('Password')
+    confirm = PasswordField('Repeat Password', validators=[EqualTo('password', message="Passwords must match")])
     submit = SubmitField('Submit')
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        if kwargs.get('update'):
+            self.password.render_kw = {"placeholder": "Leave empty if not changing"}
+            self.confirm.render_kw = {"placeholder": "Leave empty if not changing"}
+
+    def validate_email(self, email):
+        if not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', email.data):
+            raise ValidationError('Invalid email format. Must be in the format name@domain.com.')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -35,7 +45,9 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
-            raise ValidationError('Please use a different email address.')
+            raise ValidationError('Email already in use. Please use a different email address.')
+        if not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', email.data):
+            raise ValidationError('Invalid email format. Must be in the format name@domain.com.')
 
     def validate_password(self, password):
         if not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password.data):

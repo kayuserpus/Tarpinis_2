@@ -73,50 +73,53 @@ def register():
     form = RegistrationForm()
     
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm')
-        
-        errors = []
-        
-        if not username:
-            errors.append('Username is required.')
-        
-        if not email:
-            errors.append('Email is required.')
-        
-        if not password:
-            errors.append('Password is required.')
-        elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
-            errors.append('Password must be at least 8 characters long, include letters and numbers.')
-        
-        if password != confirm_password:
-            errors.append('Passwords do not match.')
-        
-        if User.query.filter_by(username=username).first():
-            errors.append('Username already taken. Please choose a different one.')
+        if form.validate_on_submit():
+            username = form.username.data
+            email = form.email.data
+            password = form.password.data
+            confirm_password = form.confirm.data
+            
+            errors = []
+            
+            if not username:
+                errors.append('Username is required.')
+            
+            if not email:
+                errors.append('Email is required.')
+            elif not re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', email):
+                errors.append('Invalid email format. Must be in the format name@domain.com.')
+            
+            if not password:
+                errors.append('Password is required.')
+            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+                errors.append('Password must be at least 8 characters long, include letters and numbers.')
+            
+            if password != confirm_password:
+                errors.append('Passwords do not match.')
+            
+            if User.query.filter_by(username=username).first():
+                errors.append('Username already taken. Please choose a different one.')
 
-        if User.query.filter_by(email=email).first():
-            errors.append('Email address already registered. Please use a different one.')    
+            if User.query.filter_by(email=email).first():
+                errors.append('Email address already registered. Please use a different one.')
 
-        if errors:
-            for error in errors:
-                flash(error, 'error')
-            return render_template('auth/register.html', form=form)
-        
-        user = User(username=username, email=email)
-        user.set_password(password)
-        
-        try:
-            db.session.add(user)
-            db.session.commit()
-            flash('Registration successful. Please log in.')
-            return redirect(url_for('auth.login'))
-        except Exception as e:
-            db.session.rollback()
-            flash('Registration failed: ' + str(e), 'error')
-            return render_template('auth/register.html', form=form)
+            if errors:
+                for error in errors:
+                    flash(error, 'error')
+                return render_template('auth/register.html', form=form)
+            
+            user = User(username=username, email=email)
+            user.set_password(password)
+            
+            try:
+                db.session.add(user)
+                db.session.commit()
+                flash('Registration successful. Please log in.')
+                return redirect(url_for('auth.login'))
+            except Exception as e:
+                db.session.rollback()
+                flash('Registration failed: ' + str(e), 'error')
+                return render_template('auth/register.html', form=form)
     
     return render_template('auth/register.html', form=form)
 
