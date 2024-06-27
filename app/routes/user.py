@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import User, Product, Cart, Order, OrderItem
-from forms import BalanceForm, CartForm
+from forms import BalanceForm, CartForm, UpdateAccountForm
 from app import db
 from datetime import timedelta
 from app.helpers import get_products_and_categories
@@ -111,7 +111,19 @@ def checkout():
 @user_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('users/account.html', user=current_user)
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            current_user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('user.account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('users/account.html', user=current_user, form=form)
 
 @user_bp.route('/orders_history', methods=['GET'])
 @login_required
