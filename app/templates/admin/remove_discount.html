@@ -1,10 +1,13 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
+    <div class="mb-3">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </div>
     <h2>Remove Discount</h2>
     <p>Are you sure you want to remove this discount?</p>
-    <form method="POST" action="{{ url_for('admin.remove_discount', discount_id=discount_id) }}">
-        <button type="submit" class="btn btn-danger">Remove</button>
+    <form id="removeDiscountForm" method="POST" action="{{ url_for('admin.remove_discount', discount_id=discount_id) }}">
+        <button type="button" class="btn btn-danger" onclick="document.getElementById('removeDiscountForm').submit();">Remove</button>
         <a href="{{ url_for('admin.list_discounts') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>

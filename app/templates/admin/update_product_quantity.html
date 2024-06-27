@@ -1,15 +1,18 @@
 {% extends "shared/layout.html" %}
 {% block content %}
 <div class="container mt-4">
+    <div class="mb-3">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </div>
     <h2>Update Product Quantity</h2>
-    <form method="POST" action="{{ url_for('admin.update_product_quantity', product_id=product_id) }}">
+    <form id="updateProductQuantityForm" method="POST" action="{{ url_for('admin.update_product_quantity', product_id=product_id) }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.quantity.label(class="form-label") }}
             {{ form.quantity(class="form-control") }}
         </div>
         <div>
-            {{ form.submit(class="btn btn-primary") }}
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('updateProductQuantityForm').submit();">Update Quantity</button>
         </div>
     </form>
 </div>
