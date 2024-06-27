@@ -92,4 +92,4 @@ class DiscountForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
-        self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]
+        self.product_id.choices = [(product.id, product.name) for product in Product.query.filter(~Product.discounts.any()).all()]
