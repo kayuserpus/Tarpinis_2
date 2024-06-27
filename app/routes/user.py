@@ -1,27 +1,16 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import User, Item, Cart, Order
+from app.models import User, Product, Cart, Order
 from forms import BalanceForm, CartForm
-from . import user
-from forms import BalanceForm
 from app import db
 
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/shop', methods=['GET'])
 def shop():
-    selected_category = request.args.get('category', '')
-
-    categories = db.session.query(Item.category.distinct()).all()
-    categories = [category[0] for category in categories]
-
-    if selected_category:
-        items = Item.query.filter_by(category=selected_category).all()
-    else:
-        items = Item.query.all()  # Fetch all items if no category is selected
-
+    products = Product.query.all()
     form = CartForm()
-    return render_template('shared/index.html', products=items, form=form, categories=categories, selected_category=selected_category)
+    return render_template('shared/index.html', products=products, form=form)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
@@ -48,9 +37,8 @@ def balance():
 @login_required
 def cart():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
-    total = sum(item.item.price * item.quantity for item in cart_items)
+    total = sum(item.product.price * item.quantity for item in cart_items)
     return render_template('users/cart.html', cart_items=cart_items, total=total)
-
 
 @user_bp.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
@@ -60,15 +48,15 @@ def add_to_cart():
 
     form = CartForm()
     if form.validate_on_submit():
-        item = Item.query.get(form.product_id.data)
-        if item and item.stock >= form.quantity.data:
-            cart_item = Cart.query.filter_by(user_id=current_user.user_id, item_id=item.item_id).first()
+        product = Product.query.get(form.product_id.data)
+        if product and product.quantity >= form.quantity.data:
+            cart_item = Cart.query.filter_by(user_id=current_user.user_id, product_id=product.id).first()
             if cart_item:
                 cart_item.quantity += form.quantity.data
             else:
-                cart_item = Cart(user_id=current_user.user_id, item_id=item.item_id, quantity=form.quantity.data)
+                cart_item = Cart(user_id=current_user.user_id, product_id=product.id, quantity=form.quantity.data)
                 db.session.add(cart_item)
-            item.stock -= form.quantity.data
+            product.quantity -= form.quantity.data
             db.session.commit()
             flash('Item added to cart.')
         else:
@@ -79,7 +67,7 @@ def add_to_cart():
 @login_required
 def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
-    total = sum(item.item.price * item.quantity for item in cart_items)
+    total = sum(item.product.price * item.quantity for item in cart_items)
     if current_user.balance >= total:
         for item in cart_items:
             db.session.delete(item)
@@ -93,11 +81,10 @@ def checkout():
 @user_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('users/account.html', user = current_user)
-
+    return render_template('users/account.html', user=current_user)
 
 @user_bp.route('/orders_history', methods=['GET', 'POST'])
 @login_required
 def order_history():
     data = Order.query.filter_by(user_id=current_user.user_id).all()
-    return render_template('users/orders_history.html', arr = data)
+    return render_template('users/orders_history.html', orders=data)

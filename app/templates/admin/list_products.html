@@ -1,0 +1,21 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Products</h2>
+    <ul class="list-group">
+        {% for product in products %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ product.name }}</strong> - {{ product.price }} USD - Quantity: {{ product.quantity }}
+            </div>
+            <div>
+                <a href="{{ url_for('admin.update_product_quantity', product_id=product.id) }}" class="btn btn-sm btn-warning">Update Quantity</a>
+                <form action="{{ url_for('admin.remove_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
