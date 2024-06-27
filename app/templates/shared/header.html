@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Ensure correct path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Document</title>
 </head>
 <body>
@@ -23,7 +23,7 @@
                             <span class="nav-link text-black">Hello, {{ current_user.username }}!</span>
                         </li>
                         <li class="nav-item ms-3">
-                            <a class="nav-link text-dark" href="{{ url_for('user.balance') }}">Balance: €{{ current_user.balance }}</a>
+                            <a class="nav-link text-dark" href="{{ url_for('user.balance') }}">Balance: €{{ current_user.balance | round(2)}}</a>
                         </li>
                         {% if not current_user.is_admin %}
                             <li class="nav-item ms-3">
