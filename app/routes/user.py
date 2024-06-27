@@ -3,14 +3,16 @@ from flask_login import login_required, current_user
 from app.models import User, Product, Cart, Order
 from forms import BalanceForm, CartForm
 from app import db
+from app.helpers import get_products_and_categories
 
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/shop', methods=['GET'])
 def shop():
-    products = Product.query.all()
+    selected_category = request.args.get('category', '')
+    products, categories = get_products_and_categories(selected_category)
     form = CartForm()
-    return render_template('shared/index.html', products=products, form=form)
+    return render_template('shared/index.html', products=products, form=form, categories=categories, selected_category=selected_category)
 
 @user_bp.route('/balance', methods=['GET', 'POST'])
 @login_required
@@ -40,27 +42,33 @@ def cart():
     total = sum(item.product.price * item.quantity for item in cart_items)
     return render_template('users/cart.html', cart_items=cart_items, total=total)
 
-@user_bp.route('/add_to_cart', methods=['POST'])
+@user_bp.route('/add_to_cart', methods=['GET'])
 def add_to_cart():
     if not current_user.is_authenticated:
         flash('You need to be logged in to add items to the cart.', 'warning')
         return redirect(url_for('auth.login'))
 
-    form = CartForm()
-    if form.validate_on_submit():
-        product = Product.query.get(form.product_id.data)
-        if product and product.quantity >= form.quantity.data:
-            cart_item = Cart.query.filter_by(user_id=current_user.user_id, product_id=product.id).first()
-            if cart_item:
-                cart_item.quantity += form.quantity.data
-            else:
-                cart_item = Cart(user_id=current_user.user_id, product_id=product.id, quantity=form.quantity.data)
-                db.session.add(cart_item)
-            product.quantity -= form.quantity.data
-            db.session.commit()
-            flash('Item added to cart.')
+    product_id = request.args.get('product_id', type=int)
+    quantity = request.args.get('quantity', type=int, default=1)
+
+    if not product_id or not quantity:
+        flash('Invalid input.', 'danger')
+        return redirect(url_for('user.shop'))
+
+    product = Product.query.get(product_id)
+    if product and product.quantity >= quantity:
+        cart_item = Cart.query.filter_by(user_id=current_user.user_id, product_id=product.id).first()
+        if cart_item:
+            cart_item.quantity += quantity
         else:
-            flash('Item not available in the requested quantity.')
+            cart_item = Cart(user_id=current_user.user_id, product_id=product.id, quantity=quantity)
+            db.session.add(cart_item)
+        product.quantity -= quantity
+        db.session.commit()
+        flash('Item added to cart.')
+    else:
+        flash('Item not available in the requested quantity.')
+    
     return redirect(url_for('user.shop'))
 
 @user_bp.route('/checkout', methods=['POST'])

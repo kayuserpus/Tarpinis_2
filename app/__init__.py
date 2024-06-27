@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from dotenv import load_dotenv
 import os
+from app.helpers import get_products_and_categories
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -27,7 +28,6 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(admin_bp)
 
-  
     with app.app_context():
         from app.models import User
         admin_username = os.environ.get('ADMIN_USERNAME')
@@ -50,7 +50,9 @@ def create_app():
 
     @app.route('/')
     def index():
-        return render_template('shared/index.html')
+        selected_category = request.args.get('category', '')
+        products, categories = get_products_and_categories(selected_category)
+        return render_template('shared/index.html', products=products, categories=categories, selected_category=selected_category)
 
     @app.errorhandler(404)
     def page_not_found(e):
