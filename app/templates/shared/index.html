@@ -7,7 +7,7 @@
         <div class="mb-4">
             <div class="form-group">
                 <label for="category">Filter by Category:</label>
-                <select name="category" id="category" class="form-control" onchange="window.location.href='{{ url_for('user.shop') }}?category=' + this.value">
+                <select name="category" id="category" class="form-control" onchange="window.location.href='{{ url_for(user.shop) }}?category=' + this.value">
                     <option value="">All Categories</option>
                     {% for category in categories %}
                         <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
