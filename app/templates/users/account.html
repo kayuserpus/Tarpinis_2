@@ -3,16 +3,16 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
 <form method="POST" action="{{ url_for('user.change_username') }}">
-    <button type="submit" class="btn btn-danger btn-lg w-70">Username</button>
+    <button type="submit" style="background: none; border: none;" >Username</button>
 </form>
-        <form method="POST" action="{{ url_for('user.change_email') }}">
-            <button type="submit" class="btn btn-danger btn-lg w-70">Update Email</button>
-        </form>
+<form method="POST" action="{{ url_for('user.change_email') }}">
+            <button type="submit" style="background: none; border: none;"> Update Email</button>
+</form>
         <form method="GET" action="{{ url_for('user.change_password') }}">
-            <button type="submit" class="btn btn-danger btn-lg w-70">Set New Password</button>
+            <button type="submit" style="background: none; border: none;"> Set New Password</button>
         </form>
         <form method="GET" action="{{ url_for('user.order_history') }}">
-            <button type="submit" class="btn btn-danger btn-lg w-70">View Order History</button>
+            <button type="submit" style="background: none; border: none;"> View Order History</button>
         </form>
         {% for message in get_flashed_messages() %}
             <div class="alert alert-danger" role="alert">
@@ -24,3 +24,4 @@
     </div>
 </div>
 {% endblock %}
+
