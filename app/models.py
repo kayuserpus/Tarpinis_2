@@ -39,6 +39,15 @@ class User(UserMixin, db.Model):
     def increment_failed_login_attempts(self):
         self.failed_login_attempts += 1
 
+    def total_amount_spent(self):
+        return sum(order.total for order in self.orders)
+
+    def total_orders(self):
+        return len(self.orders)
+
+    def is_eligible_for_discount(self):
+        return self.total_orders() > 3 or self.total_amount_spent() > 500.0
+
 class Product(db.Model):
     __tablename__ = 'Products'
     id = db.Column(db.Integer, primary_key=True)
