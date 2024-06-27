@@ -1,16 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders</title>
-</head>
-<body>
-    <h1>Orders List</h1>
-    <ul>
-        {% for order in arr %}
-            <li>{{ order.order_data }}, {{ order.total }}</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container">
+    <h2>Orders History</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order Date</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_date }}</td>
+                <td>€{{ order.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

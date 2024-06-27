@@ -3,6 +3,9 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import Product, Discount, User
 from forms import ProductForm, DiscountForm, UserForm
+import os
+from flask import current_app
+from werkzeug.utils import secure_filename
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -24,12 +27,25 @@ def add_product():
     form = ProductForm()
     
     if form.validate_on_submit():
-        product = Product(
-            name=form.name.data, 
-            price=form.price.data, 
-            quantity=form.quantity.data, 
-            description=form.description.data
-        )
+        image_file = form.image.data
+        if image_file:
+            filename = secure_filename(image_file.filename)
+            image_path = os.path.join(current_app.root_path, 'static/assets/images/product_images', filename)
+            image_file.save(image_path)
+            product = Product(
+                name=form.name.data,
+                price=form.price.data,
+                quantity=form.quantity.data,
+                description=form.description.data,
+                image_path=f'assets/images/product_images/{filename}'
+            )
+        else:
+            product = Product(
+                name=form.name.data, 
+                price=form.price.data, 
+                quantity=form.quantity.data, 
+                description=form.description.data
+            )
         db.session.add(product)
         db.session.commit()
         flash('Product added successfully.')

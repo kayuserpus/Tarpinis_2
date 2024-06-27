@@ -46,6 +46,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, default=0)
     description = db.Column(db.String(500))
+    image_path = db.Column(db.String(255), nullable=True)  # Add this line
 
     cart_items = db.relationship("Cart", back_populates="product", cascade="all, delete")
     order_items = db.relationship("OrderItem", back_populates="product", cascade="all, delete")
@@ -101,3 +102,4 @@ class Discount(db.Model):
 
     def __repr__(self):
         return f'<Product {self.product.name}>'
+    

@@ -86,5 +86,5 @@ def account():
 @user_bp.route('/orders_history', methods=['GET', 'POST'])
 @login_required
 def order_history():
-    data = Order.query.filter_by(user_id=current_user.user_id).all()
-    return render_template('users/orders_history.html', orders=data)
+    orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    return render_template('users/orders_history.html', orders=orders)

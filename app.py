@@ -1,9 +1,13 @@
-from app import create_app
-import sys
 import os
+from app import create_app
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-
+# Check if the environment variables are set, if not, set them
+if not os.getenv('ADMIN_USERNAME'):
+    os.environ['ADMIN_USERNAME'] = 'default_admin_username'
+if not os.getenv('ADMIN_EMAIL'):
+    os.environ['ADMIN_EMAIL'] = 'default_admin_email@example.com'
+if not os.getenv('ADMIN_PASSWORD'):
+    os.environ['ADMIN_PASSWORD'] = 'default_admin_password'
 
 app = create_app()
 

@@ -6,6 +6,7 @@ from wtforms import DecimalField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 from app import db
 import re
+from flask_wtf.file import FileField, FileAllowed
 
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -64,7 +65,9 @@ class ProductForm(FlaskForm):
     price = FloatField('Price', validators=[DataRequired()])
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     description = TextAreaField('Description')
+    image = FileField('Product Image', validators=[FileAllowed(['jpg', 'png'], 'Images only!')])  # Add this line
     submit = SubmitField('Add Product')
+
 
 class DiscountForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])
