@@ -107,28 +107,22 @@ def set_discount():
     
     form = DiscountForm()
     
-    if request.method == 'POST':
-        product_id = request.form.get('product_id')
-        discount_percentage = request.form.get('discount_percentage')
+    if form.validate_on_submit():
+        product_id = form.product_id.data
+        discount_percentage = form.discount_percentage.data
         
-        if product_id and discount_percentage:
-            try:
-                product_id = int(product_id)
-                discount_percentage = float(discount_percentage)
-                
-                product = Product.query.get(product_id)
-                if product:
-                    discount = Discount(product_id=product.id, discount_percentage=discount_percentage)
-                    db.session.add(discount)
-                    db.session.commit()
-                    flash('Discount set successfully.')
-                    return redirect(url_for('admin.list_discounts'))
-                else:
-                    flash('Product not found.')
-            except ValueError:
-                flash('Invalid input. Please enter valid data.')
+        existing_discount = Discount.query.filter_by(product_id=product_id).first()
+        if existing_discount:
+            flash('This product already has a discount.', 'danger')
         else:
-            flash('All fields are required.')
+            try:
+                discount = Discount(product_id=product_id, discount_percentage=discount_percentage)
+                db.session.add(discount)
+                db.session.commit()
+                flash('Discount set successfully.', 'success')
+                return redirect(url_for('admin.list_discounts'))
+            except Exception as e:
+                flash(f'An error occurred while setting the discount: {str(e)}', 'danger')
     
     return render_template('admin/set_discount.html', form=form)
 

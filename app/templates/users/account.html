@@ -2,10 +2,28 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <h2 class="text-center">User: {{ user.username }}</h2>
-        <h5 class="text-center">email: {{ user.email }}</h5>
-        <form method="POST" action="{{ url_for('user.order_history') }}">
-                <button type="submit" class="btn btn-success btn-lg w-100">View order history</button>
+        <h2 class="text-center">Update Your Account</h2>
+        <form method="POST" action="{{ url_for('user.account') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", value=form.username.data) }}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", value=form.email.data) }}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="") }}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm.label(class="form-label") }}
+                {{ form.confirm(class="form-control", placeholder="") }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success w-100">Update</button>
+            </div>
         </form>
         {% if error %}
         <div class="alert alert-danger" role="alert">

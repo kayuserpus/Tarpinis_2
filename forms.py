@@ -92,4 +92,11 @@ class DiscountForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
-        self.product_id.choices = [(product.id, product.name) for product in Product.query.all()]
+        self.product_id.choices = [(product.id, product.name) for product in Product.query.filter(~Product.discounts.any()).all()]
+
+class UpdateAccountForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    submit = SubmitField('Update')

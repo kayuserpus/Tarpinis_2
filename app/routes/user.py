@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import User, Product, Cart, Order, OrderItem
-from forms import BalanceForm, CartForm
+from forms import BalanceForm, CartForm, UpdateAccountForm
 from app import db
+from datetime import timedelta
 from app.helpers import get_products_and_categories
 
 user_bp = Blueprint('user', __name__)
@@ -79,6 +80,11 @@ def add_to_cart():
 @login_required
 def checkout():
     cart_items = Cart.query.filter_by(user_id=current_user.user_id).all()
+
+    if not cart_items:
+        flash('Your cart is empty. Add items to your cart before checking out.', 'warning')
+        return redirect(url_for('user.cart'))
+
     total = sum(item.product.price * item.quantity for item in cart_items)
 
     if current_user.is_eligible_for_discount():
@@ -90,7 +96,7 @@ def checkout():
         db.session.add(new_order)
         db.session.commit()
         for item in cart_items:
-            order_item = OrderItem(order_id=new_order.order_id, product_id=item.product_id, quantity=item.quantity, price=item.product.price)
+            order_item = OrderItem(order_id=new_order.order_id, product_id=item.product_id, quantity=item.quantity, price=item.product.get_discounted_price())
             db.session.add(order_item)
             db.session.delete(item)
         current_user.balance -= total
@@ -98,19 +104,33 @@ def checkout():
         flash('Purchase successful.')
     else:
         flash('Insufficient balance.')
-    
+
     return redirect(url_for('user.cart'))
 
 
 @user_bp.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('users/account.html', user=current_user)
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            current_user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('user.account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('users/account.html', user=current_user, form=form)
 
 @user_bp.route('/orders_history', methods=['GET'])
 @login_required
 def order_history():
     orders = Order.query.filter_by(user_id=current_user.user_id).all()
+    for order in orders:
+        order.order_date += timedelta(hours=3)
     return render_template('users/orders_history.html', orders=orders)
 
 
