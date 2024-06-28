@@ -44,7 +44,7 @@ body {
 }
 
 .navbar-nav .nav-item .nav-link:hover {
-    color: #e0e0e0 !important;
+    color: #dc3545 !important; /* Change hover color to red */
     transform: scale(1.1); /* Slightly enlarge on hover */
 }
 
@@ -59,7 +59,7 @@ body {
 }
 
 .nav-link.text-black:hover {
-    color: #333 !important;
+    color: #dc3545 !important; /* Change hover color to red */
     transform: scale(1.1); /* Slightly enlarge on hover */
 }
 
