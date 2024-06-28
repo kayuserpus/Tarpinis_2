@@ -1,0 +1,17 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+    </div>
+    <h2>User Details</h2>
+    <ul>
+        <li>ID: {{ user.id }}</li>
+        <li>Username: {{ user.username }}</li>
+        <li>Email: {{ user.email }}</li>
+        <li>Balance: {{ user.balance }}</li>
+        <li>Admin: {{ user.is_admin }}</li>
+        <li>Created At: {{ user.created_at }}</li>
+    </ul>
+</div>
+{% endblock %}

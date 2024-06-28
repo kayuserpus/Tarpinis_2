@@ -1,0 +1,48 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="text-center">Products</h2>
+        
+        <div class="mb-4">
+            <div class="form-group">
+                <label for="category">Filter by Category:</label>
+                <select name="category" id="category" class="form-control" onchange="window.location.href='{{ url_for('user.shop') }}?category=' + this.value">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+        {% for product in products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item">
+                <div class="card">
+                    {% if product.image_path %}
+                    <img src="{{ url_for('static', filename=product.image_path) }}" class="card-img-top" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='assets/images/product_images/Placeholder.jpg') }}" class="card-img-top" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        {% if product.price != product.discounted_price %}
+                        <p class="card-text">
+                            <del>€{{ product.price | round(2) }}</del>
+                            <strong>€{{ product.discounted_price | round(2) }}</strong> - {{ product.quantity }} in stock
+                        </p>
+                        {% else %}
+                        <p class="card-text">€{{ product.price | round(2) }} - {{ product.quantity }} in stock</p>
+                        {% endif %}
+                        <a href="{{ url_for('user.add_to_cart', product_id=product.id, quantity=1) }}" class="btn btn-danger btn-lg">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

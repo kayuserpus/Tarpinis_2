@@ -1,0 +1,51 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container">
+    <h2>Your Shopping Cart</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.product.name }}</td> 
+                <td>€{{ item.product.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>€{{ (item.product.price * item.quantity) | round(2) }}</td>
+                <td>
+                    <form action="{{ url_for('user.remove_one_from_cart', item_id=item.product_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-danger btn-sm" type="submit">Remove One</button>
+                    </form>
+                    <form action="{{ url_for('user.remove_all_from_cart', item_id=item.product_id) }}" method="post" style="display:inline;">
+                        {{ form.hidden_tag() }}
+                        <button class="btn btn-warning btn-sm" type="submit">Remove All</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if cart_items|length > 0 %}
+        {% if current_user.is_eligible_for_discount() %}
+        <h4 class="text-right">Discount: 15%</h4>
+        <h3 class="text-right">Total after Discount: €{{ (total * 0.85) | round(2) }}</h3>
+        {% else %}
+        <h3 class="text-right">Total: €{{ total | round(2) }}</h3>
+        {% endif %}
+        <form action="{{ url_for('user.checkout') }}" method="post">
+            {{ form.hidden_tag() }}
+            <button class="btn btn-primary" type="submit">Checkout</button>
+        </form>
+    {% else %}
+        <h3 class="text-right">Your cart is empty.</h3>
+    {% endif %}
+</div>
+{% endblock %}

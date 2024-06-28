@@ -1,0 +1,37 @@
+{% extends "shared/layout.html" %}
+{% block content %}
+<div class="container mt-4">   
+    <h2>Update User</h2>
+    <form id="updateUserForm" method="POST" action="{{ url_for('admin.update_user', user_id=user_id) }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control", value=form.username.data) }}
+        </div>
+        <div class="mb-3">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control", value=form.email.data) }}
+        </div>
+        <div class="mb-3">
+            {{ form.balance.label(class="form-label") }}
+            {{ form.balance(class="form-control", value=form.balance.data) }}
+        </div>
+        <div class="form-check mb-3">
+            {{ form.is_admin(class="form-check-input") }}
+            {{ form.is_admin.label(class="form-check-label") }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control", placeholder="Leave blank if not changing") }}
+        </div>
+        <div class="mb-3">
+            {{ form.confirm.label(class="form-label") }}
+            {{ form.confirm(class="form-control", placeholder="Leave blank if not changing") }}
+        </div>
+        <div>
+            <a class="btn btn-primary" onclick="document.getElementById('updateUserForm').submit();">Update User</a>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Admin Panel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
