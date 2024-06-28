@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, DecimalField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FloatField, IntegerField, TextAreaField, DecimalField, SelectField
 from wtforms.validators import DataRequired, NumberRange, ValidationError, Email, EqualTo
-from app.models import User
+from app.models import User, Product
 from app import db
 import re
 
