@@ -18,7 +18,7 @@ body {
 
 .navbar-brand:hover {
     color: #c82333 !important;
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
 
 .form-control {
@@ -45,7 +45,7 @@ body {
 .navbar-nav .nav-item .nav-link:hover {
     color: #dc3545 !important;
     transform: scale(1.2);
-    font-weight: bold; 
+    font-weight: bold;
 }
 
 .no-hover:hover {
@@ -194,5 +194,15 @@ footer {
 }
 
 h1.title {
-    font-size: 1.5em; 
+    font-size: 1.5em;
+}
+
+.list-group-item a {
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.list-group-item a:hover {
+    color: #dc3545;
 }
