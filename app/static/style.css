@@ -40,6 +40,7 @@ body {
     margin-right: 15px;
     transition: color 0.3s, transform 0.3s;
     padding: 10px 15px;
+    color: #000 !important;
 }
 
 .navbar-nav .nav-item .nav-link:hover {
@@ -235,4 +236,17 @@ h1.title {
 .btn-danger:hover {
     background-color: #c82333;
     border-color: #bd2130;
+}
+
+.navbar-collapse {
+    background-color: #000;
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: #fff !important;
+    padding: 10px 15px;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    color: #dc3545 !important;
 }
